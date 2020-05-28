@@ -4,6 +4,7 @@ on:
   push:
     branches: 
     - master
+    - release/*
   pull_request:
     branches: 
     - master
@@ -20,7 +21,7 @@ jobs:
       with:
         dotnet-version: 3.1.202
     - name: Install dependencies
-      run: dotnet restore
+      run: dotnet restore 
       working-directory: ./src
     - name: Build
       run: dotnet build --configuration Release --no-restore
