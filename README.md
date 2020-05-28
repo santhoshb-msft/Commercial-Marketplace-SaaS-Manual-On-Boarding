@@ -1,3 +1,5 @@
+![.NET Core](https://github.com/Ercenk/Commercial-Marketplace-SaaS-Manual-On-Boarding/workflows/.NET%20Core/badge.svg)
+
 ---
 page_type: sample
 languages:
