@@ -1,4 +1,4 @@
-﻿@using SaaSFulfillmentClient.Models
+﻿@using Microsoft.Marketplace.Models
 @model AzureSubscriptionProvisionModel
 
 @{
@@ -82,7 +82,7 @@
                         </dd>
                     </div>
 
-                    @if (Model.SubscriptionStatus == StatusEnum.Subscribed)
+                    @if (Model.SubscriptionStatus == SubscriptionStatusEnum.Subscribed)
                     {
                         <div class="row">
                             <dt class="col-sm-2">

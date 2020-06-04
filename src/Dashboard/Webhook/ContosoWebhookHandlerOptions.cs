@@ -1,4 +1,4 @@
-﻿namespace Dashboard
+﻿namespace Dashboard.Webhook
 {
     public class ContosoWebhookHandlerOptions
     {

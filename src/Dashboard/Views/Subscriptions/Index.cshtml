@@ -1,4 +1,4 @@
-﻿@using SaaSFulfillmentClient.Models
+﻿@using Microsoft.Marketplace.Models
 @model IEnumerable<SubscriptionViewModel>
 @{
     ViewData["Title"] = "All Offer Subscriptions";
@@ -8,7 +8,7 @@
     <br />
         <span class="anchor">Status filter: </span>
         <div class="d-inline-block">
-            @foreach (var status in Enum.GetNames(typeof(StatusEnum)))
+            @foreach (var status in Enum.GetNames(typeof(SubscriptionStatusEnum)))
             {
 
                 <input type="checkbox" class="statusCheckbox" id="@status" checked/> @status

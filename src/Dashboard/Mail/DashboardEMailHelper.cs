@@ -1,4 +1,7 @@
-﻿namespace Dashboard.Mail
+﻿using Microsoft.Marketplace;
+using Microsoft.Marketplace.SaaS;
+
+namespace Dashboard.Mail
 {
     using System;
     using System.Collections.Generic;
@@ -13,8 +16,6 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    using SaaSFulfillmentClient;
-
     using SendGrid;
     using SendGrid.Helpers.Mail;
 
@@ -22,15 +23,15 @@
     {
         private const string MailLinkControllerName = "MailLink";
 
-        private readonly IFulfillmentClient fulfillmentClient;
+        private readonly IMarketplaceClient marketplaceClient;
 
         private readonly DashboardOptions options;
 
         public DashboardEMailHelper(
             IOptionsMonitor<DashboardOptions> optionsMonitor,
-            IFulfillmentClient fulfillmentClient)
+            IMarketplaceClient marketplaceClient)
         {
-            this.fulfillmentClient = fulfillmentClient;
+            this.marketplaceClient = marketplaceClient;
             this.options = optionsMonitor.CurrentValue;
         }
 
@@ -119,7 +120,7 @@
                                           notificationModel.SubscriptionId.ToString())
                                   };
 
-            var subscriptionDetails = await this.fulfillmentClient.GetSubscriptionAsync(
+            var subscriptionDetails = await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(
                                           notificationModel.SubscriptionId,
                                           Guid.Empty,
                                           Guid.Empty,
@@ -233,7 +234,7 @@
                                       new Tuple<string, string>("operationId", notificationModel.OperationId.ToString())
                                   };
 
-            var subscriptionDetails = await this.fulfillmentClient.GetSubscriptionAsync(
+            var subscriptionDetails = await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(
                                           notificationModel.SubscriptionId,
                                           Guid.Empty,
                                           Guid.Empty,

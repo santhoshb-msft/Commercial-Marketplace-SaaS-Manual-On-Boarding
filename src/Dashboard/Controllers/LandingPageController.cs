@@ -1,6 +1,4 @@
 ﻿using System.Linq;
-using SaaSFulfillmentClient;
-using SaaSFulfillmentClient.Models;
 
 namespace Dashboard.Controllers
 {
@@ -16,11 +14,14 @@ namespace Dashboard.Controllers
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
+    using Microsoft.Marketplace;
+    using Microsoft.Marketplace.Models;
+    using Microsoft.Marketplace.SaaS;
 
     [Authorize]
     public class LandingPageController : Controller
     {
-        private readonly IFulfillmentClient fulfillmentClient;
+        private readonly IMarketplaceClient marketplaceClient;
         private readonly IMarketplaceNotificationHandler notificationHandler;
         private readonly ILogger<LandingPageController> logger;
 
@@ -28,11 +29,11 @@ namespace Dashboard.Controllers
 
         public LandingPageController(
             IOptionsMonitor<DashboardOptions> dashboardOptions,
-            IFulfillmentClient fulfillmentClient,
+            IMarketplaceClient marketplaceClient,
             IMarketplaceNotificationHandler notificationHandler,
             ILogger<LandingPageController> logger)
         {
-            this.fulfillmentClient = fulfillmentClient;
+            this.marketplaceClient = marketplaceClient;
             this.notificationHandler = notificationHandler;
             this.logger = logger;
             this.options = dashboardOptions.CurrentValue;
@@ -91,51 +92,42 @@ namespace Dashboard.Controllers
            string token,
            CancellationToken cancellationToken)
         {
-            var requestId = Guid.NewGuid();
-            var correlationId = Guid.NewGuid();
-
-            var resolvedSubscription = await this.fulfillmentClient.ResolveSubscriptionAsync(
+            var resolvedSubscription = await this.marketplaceClient.Fulfillment.ResolveAsync(
                                            token,
-                                           requestId,
-                                           correlationId,
+                                           null,
+                                           null,
                                            cancellationToken);
 
             if (resolvedSubscription == default(ResolvedSubscription)) return default;
-            if (!resolvedSubscription.Success) return default;
 
-            var existingSubscription = await this.fulfillmentClient.GetSubscriptionAsync(
-                                           resolvedSubscription.SubscriptionId,
-                                           requestId,
-                                           correlationId,
-                                           cancellationToken);
+            var existingSubscription = resolvedSubscription.Subscription;
 
-            var availablePlans = (await this.fulfillmentClient.GetSubscriptionPlansAsync(
-                                      resolvedSubscription.SubscriptionId,
-                                      requestId,
-                                      correlationId,
-                                      cancellationToken)).Plans.ToList();
+            var availablePlans = (await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(
+                                      resolvedSubscription.Id.Value,
+                                      null,
+                                      null,
+                                      cancellationToken));
 
             var provisioningModel = new AzureSubscriptionProvisionModel
             {
                 PlanId = resolvedSubscription.PlanId,
-                SubscriptionId = resolvedSubscription.SubscriptionId,
+                SubscriptionId = resolvedSubscription.Id.Value,
                 OfferId = resolvedSubscription.OfferId,
                 SubscriptionName = resolvedSubscription.SubscriptionName,
                 PurchaserEmail = existingSubscription.Purchaser.EmailId,
-                PurchaserTenantId = existingSubscription.Purchaser.TenantId,
+                PurchaserTenantId = existingSubscription.Purchaser.TenantId.Value,
 
                 // Assuming this will be set to the value the customer already set when subscribing, if we are here after the initial subscription activation
                 // Landing page is used both for initial provisioning and configuration of the subscription.
                 Region = TargetContosoRegionEnum.NorthAmerica,
-                AvailablePlans = availablePlans,
-                SubscriptionStatus = existingSubscription.SaasSubscriptionStatus,
+                AvailablePlans = availablePlans.Plans,
+                SubscriptionStatus = existingSubscription.SaasSubscriptionStatus.Value,
                 PendingOperations =
-                                                (await this.fulfillmentClient.GetSubscriptionOperationsAsync(
-                                                     resolvedSubscription.SubscriptionId,
-                                                     requestId,
-                                                     correlationId,
-                                                     cancellationToken)).Any(
-                                                    o => o.Status == OperationStatusEnum.InProgress)
+                                                (await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
+                                                     resolvedSubscription.Id.Value,
+                                                     null,
+                                                     null,
+                                                     cancellationToken)).Any(o => o.Status == OperationStatusEnum.InProgress)
             };
 
             return provisioningModel;
@@ -146,7 +138,7 @@ namespace Dashboard.Controllers
             CancellationToken cancellationToken)
         {
             // A new subscription will have PendingFulfillmentStart as status
-            if (provisionModel.SubscriptionStatus != StatusEnum.Subscribed)
+            if (provisionModel.SubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
             {
                 
                 await this.notificationHandler.ProcessActivateAsync(provisionModel, cancellationToken);

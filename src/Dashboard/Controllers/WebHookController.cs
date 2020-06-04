@@ -3,6 +3,9 @@
     using System;
     using System.IO;
     using System.Threading.Tasks;
+
+    using Dashboard.Webhook;
+
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
@@ -12,8 +15,6 @@
     using Microsoft.Extensions.Options;
 
     using Newtonsoft.Json;
-
-    using SaaSFulfillmentClient.WebHook;
 
     // Removing the authorize attribute. This will be relevant once we start receivint JWT from the marketplac engine
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

@@ -1,6 +1,6 @@
 ﻿namespace Dashboard.Models
 {
-    using SaaSFulfillmentClient.WebHook;
+    using Dashboard.Webhook;
 
     public class OperationUpdateViewModel
     {

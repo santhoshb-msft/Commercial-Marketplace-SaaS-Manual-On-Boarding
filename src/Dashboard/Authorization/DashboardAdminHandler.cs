@@ -1,4 +1,4 @@
-﻿namespace Dashboard
+﻿namespace Dashboard.Authorization
 {
     using System.Threading.Tasks;
 

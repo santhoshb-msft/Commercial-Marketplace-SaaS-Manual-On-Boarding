@@ -2,7 +2,7 @@
 {
     using System;
 
-    using SaaSFulfillmentClient.WebHook;
+    using Dashboard.Webhook;
 
     public class NotificationModel
     {

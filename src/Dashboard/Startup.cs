@@ -1,27 +1,30 @@
-﻿namespace Dashboard
+﻿using Dashboard.Authorization;
+using Dashboard.Mail;
+using Dashboard.Marketplace;
+using Dashboard.Webhook;
+
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Protocols;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Marketplace.SaaS;
+
+using System.Threading;
+
+namespace Dashboard
 {
-    using Dashboard.Mail;
-    using Dashboard.Marketplace;
-
-    using Microsoft.AspNetCore.Authentication;
-    using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-    using Microsoft.AspNetCore.Authentication.Cookies;
-    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Builder;
-    using Microsoft.AspNetCore.Hosting;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc.Authorization;
-    using Microsoft.Extensions.Configuration;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Microsoft.Extensions.Hosting;
-    using Microsoft.IdentityModel.Protocols;
-    using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-    using Microsoft.IdentityModel.Tokens;
-    using SaaSFulfillmentClient;
-    using System.Threading;
-
     public class Startup
     {
         private readonly IConfiguration configuration;
@@ -109,13 +112,20 @@
 
             services.Configure<DashboardOptions>(this.configuration.GetSection("Dashboard"));
 
-            services.AddFulfillmentClient(options => this.configuration.Bind("FulfillmentClient", options))
-                .WithAzureTableOperationsStore(this.configuration["FulfillmentClient:OperationsStoreConnectionString"]);
+            services.TryAddScoped<IMarketplaceClient>(sp =>
+            {
+                var marketplaceClientOptions = new MarketplaceClientOptions();
+                this.configuration.GetSection(MarketplaceClientOptions.MarketplaceClient).Bind(marketplaceClientOptions);
+                return new MarketplaceClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, marketplaceClientOptions.AppKey);
+            });
+
+            services.TryAddScoped<IOperationsStore>(sp => new AzureTableOperationsStore(this.configuration["FulfillmentClient:OperationsStoreConnectionString"]));
 
             // Hack to save the host name and port during the handling the request. Please see the WebhookController and ContosoWebhookHandler implementations
             services.AddSingleton<ContosoWebhookHandlerOptions>();
 
-            services.AddWebhookProcessor().WithWebhookHandler<ContosoWebhookHandler>();
+            services.TryAddScoped<IWebhookHandler, ContosoWebhookHandler>();
+            services.TryAddScoped<IWebhookProcessor, WebhookProcessor>();
 
             // It is email in this sample, but you can plug in anything that implements the interface and communicate with an existing API.
             // In the email case, the existing API is the SendGrid API...

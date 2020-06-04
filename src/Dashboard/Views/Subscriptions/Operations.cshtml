@@ -20,9 +20,6 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Operations[0].Status)
                 </th>
-                <th> @Html.DisplayNameFor(model => model.Operations[0].OperationRequestSource)</th>
-                <th> @Html.DisplayNameFor(model => model.Operations[0].ErrorStatusCode)</th>
-                <th> @Html.DisplayNameFor(model => model.Operations[0].ErrorMessage)</th>
             </tr>
         </thead>
         <tbody>
@@ -38,9 +35,6 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Status)
                     </td>
-                    <td> @Html.DisplayFor(modelItem => item.OperationRequestSource)</td>
-                    <td> @Html.DisplayFor(modelItem => item.ErrorStatusCode)</td>
-                    <td> @Html.DisplayFor(modelItem => item.ErrorMessage)</td>
                 </tr>
             }
         </tbody>

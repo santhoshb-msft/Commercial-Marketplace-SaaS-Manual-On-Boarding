@@ -1,13 +1,14 @@
-﻿namespace Dashboard.Models
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-    using SaaSFulfillmentClient.Models;
+namespace Dashboard.Models
+{
+    using Microsoft.Marketplace.Models;
+
+    using System;
 
     public class UpdateSubscriptionViewModel
     {
-        public IEnumerable<Plan> AvailablePlans { get; set; }
+        public IList<Plan> AvailablePlans { get; set; }
 
         public string CurrentPlan { get; set; }
 

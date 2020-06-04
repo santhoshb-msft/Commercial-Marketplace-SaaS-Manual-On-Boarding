@@ -5,17 +5,16 @@
     using System.ComponentModel.DataAnnotations;
 
     using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Marketplace.Models;
 
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
-
-    using SaaSFulfillmentClient.Models;
 
     [BindProperties]
     public class AzureSubscriptionProvisionModel
     {
         [Display(Name = "Available plans")]
-        public IEnumerable<Plan> AvailablePlans { get; set; }
+        public IList<Plan> AvailablePlans { get; set; }
 
         [Display(Name = "Business unit contact email")]
         public string BusinessUnitContactEmail { get; set; }
@@ -45,7 +44,7 @@
         [Display(Name = "Subscription name")]
         public string SubscriptionName { get; set; }
 
-        public StatusEnum SubscriptionStatus { get; set; }
+        public SubscriptionStatusEnum SubscriptionStatus { get; set; }
 
         [Display(Name = "Purchaser email")]
         public string PurchaserEmail { get; set; }

@@ -1,4 +1,4 @@
-﻿namespace Dashboard
+﻿namespace Dashboard.Authorization
 {
     using Microsoft.AspNetCore.Authorization;
 
@@ -6,7 +6,7 @@
     {
         public DashboardAdminRequirement(string dashboardAdmin)
         {
-            this.AdminName = dashboardAdmin;
+            AdminName = dashboardAdmin;
         }
 
         public string AdminName { get; }
