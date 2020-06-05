@@ -23,6 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\commercial-marketplace-saas-for-net\sdk\src\Microsoft.Marketplace.SaaS\Microsoft.Marketplace.SaaS.csproj" />
+    <ProjectReference Include="..\..\..\..\commercial-marketplace-saas-for-net\sdk\src\Microsoft.Marketplace\Microsoft.Marketplace.csproj" />
   </ItemGroup>
 </Project>

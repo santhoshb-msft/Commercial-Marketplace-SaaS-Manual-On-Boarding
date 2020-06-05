@@ -1,4 +1,4 @@
-﻿namespace Dashboard.Models
+﻿namespace CommandCenter.Models
 {
     public enum ActionsEnum
     {

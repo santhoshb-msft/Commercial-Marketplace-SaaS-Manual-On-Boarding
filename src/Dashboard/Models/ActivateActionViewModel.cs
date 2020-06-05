@@ -1,7 +1,7 @@
-﻿namespace Dashboard.Models
-{
-    using System;
+﻿using System;
 
+namespace CommandCenter.Models
+{
     public class ActivateActionViewModel
     {
         public string PlanId { get; set; }

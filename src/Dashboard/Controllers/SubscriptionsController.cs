@@ -1,22 +1,19 @@
-﻿namespace Dashboard.Controllers
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using CommandCenter.Marketplace;
+using CommandCenter.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.Marketplace;
+using Microsoft.Marketplace.Models;
+
+namespace CommandCenter.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dashboard.Marketplace;
-    using Dashboard.Models;
-
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Options;
-    using Microsoft.Marketplace;
-    using Microsoft.Marketplace.Models;
-    using Microsoft.Marketplace.SaaS;
-
     [Authorize("DashboardAdmin")]
     public class SubscriptionsController : Controller
     {
@@ -207,7 +204,7 @@
                                    null,
                                    cancellationToken);
 
-            await this.operationsStore.RecordAsync(model.SubscriptionId, updateResult.OperationLocation.ExtractOperationId());
+            await this.operationsStore.RecordAsync(model.SubscriptionId, updateResult.OperationLocation);
 
             return this.RedirectToAction("Index");
         }

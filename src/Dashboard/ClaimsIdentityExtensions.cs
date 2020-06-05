@@ -1,9 +1,9 @@
-﻿namespace Dashboard
-{
-    using System;
-    using System.Security.Claims;
-    using System.Security.Principal;
+﻿using System;
+using System.Security.Claims;
+using System.Security.Principal;
 
+namespace CommandCenter
+{
     public static class ClaimsIdentityExtensions
     {
         public static string GetUserEmail(this IIdentity principal)

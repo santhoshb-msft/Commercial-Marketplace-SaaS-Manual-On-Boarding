@@ -1,7 +1,7 @@
-﻿namespace Dashboard
-{
-    using System.Net.Mail;
+﻿using System.Net.Mail;
 
+namespace CommandCenter
+{
     public static class StringExtensions
     {
         public static string GetDomainNameFromEmail(this string emailString)

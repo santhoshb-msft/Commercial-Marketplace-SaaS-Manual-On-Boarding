@@ -1,9 +1,8 @@
-﻿namespace Dashboard.Marketplace
+﻿using System;
+using Microsoft.Azure.Cosmos.Table;
+
+namespace CommandCenter.Marketplace
 {
-    using Microsoft.Azure.Cosmos.Table;
-
-    using System;
-
     public class OperationRecord : TableEntity
     {
         public OperationRecord(string subscriptionId, string operationId)

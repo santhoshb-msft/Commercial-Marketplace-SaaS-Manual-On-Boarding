@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Marketplace;
-using Microsoft.Marketplace.SaaS;
-
 using Newtonsoft.Json;
 
-
-namespace Dashboard.Webhook
+namespace CommandCenter.Webhook
 {
     public class WebhookProcessor : IWebhookProcessor
     {

@@ -1,7 +1,7 @@
-﻿namespace Dashboard.Marketplace
-{
-    using System;
+﻿using System;
 
+namespace CommandCenter.Marketplace
+{
     public class OperationDetails
     {
         public Guid OperationId { get; set; }

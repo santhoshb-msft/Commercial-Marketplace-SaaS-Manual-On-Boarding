@@ -1,13 +1,12 @@
-﻿namespace Dashboard.OperationsStore
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos.Table;
+
+namespace CommandCenter.OperationsStore
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Microsoft.Azure.Cosmos.Table;
-
     public class AzureTableOperationsStore : IOperationsStore
     {
         private const string TableName = "maerketplaceoperations";

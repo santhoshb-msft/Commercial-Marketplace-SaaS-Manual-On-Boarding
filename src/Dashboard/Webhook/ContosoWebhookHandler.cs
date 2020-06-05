@@ -1,9 +1,9 @@
-﻿namespace Dashboard.Webhook
-{
-    using Microsoft.Marketplace.Models;
-    using System;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Microsoft.Marketplace.Models;
 
+namespace CommandCenter.Webhook
+{
     public class ContosoWebhookHandler : IWebhookHandler
     {
         private readonly IMarketplaceNotificationHandler notificationHelper;

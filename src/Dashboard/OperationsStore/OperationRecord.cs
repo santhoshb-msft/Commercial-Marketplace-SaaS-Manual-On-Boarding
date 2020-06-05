@@ -1,9 +1,8 @@
-﻿namespace Dashboard.OperationsStore
+﻿using System;
+using Microsoft.Azure.Cosmos.Table;
+
+namespace CommandCenter.OperationsStore
 {
-    using System;
-
-    using Microsoft.Azure.Cosmos.Table;
-
     public class OperationRecord : TableEntity
     {
         public OperationRecord(string subscriptionId, string operationId)

@@ -1,17 +1,13 @@
-﻿namespace Dashboard.Controllers
+﻿using System.Threading;
+using System.Threading.Tasks;
+using CommandCenter.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Marketplace;
+using Microsoft.Marketplace.Models;
+
+namespace CommandCenter.Controllers
 {
-    using System;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dashboard.Models;
-
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace;
-    using Microsoft.Marketplace.Models;
-    using Microsoft.Marketplace.SaaS;
-
     [Authorize("DashboardAdmin")]
     public class MailLinkController : Controller
     {

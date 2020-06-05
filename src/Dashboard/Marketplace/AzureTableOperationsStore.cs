@@ -1,12 +1,11 @@
-﻿using Microsoft.Azure.Cosmos.Table;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Azure.Cosmos.Table;
 
-namespace Dashboard.Marketplace
+namespace CommandCenter.Marketplace
 {
     public class AzureTableOperationsStore : IOperationsStore
     {

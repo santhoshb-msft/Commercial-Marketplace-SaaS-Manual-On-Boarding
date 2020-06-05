@@ -1,9 +1,8 @@
-﻿namespace Dashboard.Authorization
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+
+namespace CommandCenter.Authorization
 {
-    using System.Threading.Tasks;
-
-    using Microsoft.AspNetCore.Authorization;
-
     public class DashboardAdminHandler : AuthorizationHandler<DashboardAdminRequirement>
     {
         protected override Task HandleRequirementAsync(

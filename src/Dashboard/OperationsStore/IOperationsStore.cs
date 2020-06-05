@@ -1,10 +1,10 @@
-﻿namespace Dashboard.OperationsStore
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
+namespace CommandCenter.OperationsStore
+{
     public interface IOperationsStore
     {
         Task<IEnumerable<OperationRecord>> GetAllSubscriptionRecordsAsync(Guid subscriptionId, CancellationToken cancellationToken = default);

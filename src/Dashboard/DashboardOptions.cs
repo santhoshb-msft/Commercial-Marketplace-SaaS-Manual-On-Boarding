@@ -1,7 +1,7 @@
-﻿namespace Dashboard
-{
-    using Dashboard.Mail;
+﻿using CommandCenter.Mail;
 
+namespace CommandCenter
+{
     public class DashboardOptions
     {
         public string BaseUrl { get; set; }

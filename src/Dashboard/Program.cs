@@ -1,8 +1,8 @@
-﻿namespace Dashboard
-{
-    using Microsoft.AspNetCore;
-    using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
 
+namespace CommandCenter
+{
     public class Program
     {
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)

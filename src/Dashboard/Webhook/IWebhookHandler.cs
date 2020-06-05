@@ -1,7 +1,7 @@
 ﻿
 using System.Threading.Tasks;
 
-namespace Dashboard.Webhook
+namespace CommandCenter.Webhook
 {
     public interface IWebhookHandler
     {

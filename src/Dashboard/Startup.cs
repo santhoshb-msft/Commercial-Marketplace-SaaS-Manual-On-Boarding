@@ -1,8 +1,8 @@
-﻿using Dashboard.Authorization;
-using Dashboard.Mail;
-using Dashboard.Marketplace;
-using Dashboard.Webhook;
-
+﻿using System.Threading;
+using CommandCenter.Authorization;
+using CommandCenter.Mail;
+using CommandCenter.Marketplace;
+using CommandCenter.Webhook;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -19,11 +19,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Marketplace.SaaS;
+using Microsoft.Marketplace;
 
-using System.Threading;
-
-namespace Dashboard
+namespace CommandCenter
 {
     public class Startup
     {

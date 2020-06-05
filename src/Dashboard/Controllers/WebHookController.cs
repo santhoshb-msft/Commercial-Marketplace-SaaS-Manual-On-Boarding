@@ -1,21 +1,14 @@
-﻿namespace Dashboard.Controllers
+﻿using System.Threading.Tasks;
+using CommandCenter.Webhook;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+
+namespace CommandCenter.Controllers
 {
-    using System;
-    using System.IO;
-    using System.Threading.Tasks;
-
-    using Dashboard.Webhook;
-
-    using Microsoft.AspNetCore.Authentication.JwtBearer;
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.AspNetCore.Mvc.Filters;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-
-    using Newtonsoft.Json;
-
     // Removing the authorize attribute. This will be relevant once we start receivint JWT from the marketplac engine
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [RequireHttps]

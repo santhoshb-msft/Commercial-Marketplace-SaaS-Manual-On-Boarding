@@ -1,10 +1,9 @@
-﻿namespace Dashboard.Marketplace
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.Marketplace.Models;
+
+namespace CommandCenter.Marketplace
 {
-    using Microsoft.Marketplace.Models;
-
-    using System;
-    using System.ComponentModel.DataAnnotations;
-
     public class MarketplaceSubscription
     {
         public string OfferId { get; set; }

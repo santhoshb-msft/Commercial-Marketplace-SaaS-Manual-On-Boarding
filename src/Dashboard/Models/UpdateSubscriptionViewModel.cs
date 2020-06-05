@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Marketplace.Models;
 
-namespace Dashboard.Models
+namespace CommandCenter.Models
 {
-    using Microsoft.Marketplace.Models;
-
-    using System;
-
     public class UpdateSubscriptionViewModel
     {
         public IList<Plan> AvailablePlans { get; set; }

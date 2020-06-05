@@ -1,4 +1,4 @@
-﻿namespace Dashboard.Webhook
+﻿namespace CommandCenter.Webhook
 {
     public enum WebhookAction
     {

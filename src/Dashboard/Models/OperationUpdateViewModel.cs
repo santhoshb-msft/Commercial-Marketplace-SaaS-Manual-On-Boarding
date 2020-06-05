@@ -1,7 +1,7 @@
-﻿namespace Dashboard.Models
-{
-    using Dashboard.Webhook;
+﻿using CommandCenter.Webhook;
 
+namespace CommandCenter.Models
+{
     public class OperationUpdateViewModel
     {
         public string OperationType { get; set; }

@@ -1,23 +1,18 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using CommandCenter.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Marketplace;
+using Microsoft.Marketplace.Models;
 
-namespace Dashboard.Controllers
+namespace CommandCenter.Controllers
 {
-    using System;
-    using System.Security.Claims;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dashboard.Marketplace;
-    using Dashboard.Models;
-
-    using Microsoft.AspNetCore.Authorization;
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Options;
-    using Microsoft.Marketplace;
-    using Microsoft.Marketplace.Models;
-    using Microsoft.Marketplace.SaaS;
-
     [Authorize]
     public class LandingPageController : Controller
     {

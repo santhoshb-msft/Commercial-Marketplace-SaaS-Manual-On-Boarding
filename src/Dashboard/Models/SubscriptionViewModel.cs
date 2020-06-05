@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Dashboard.Marketplace;
-
+using CommandCenter.Marketplace;
 using Microsoft.Marketplace.Models;
 
-namespace Dashboard.Models
+namespace CommandCenter.Models
 {
     public class SubscriptionViewModel : MarketplaceSubscription
     {

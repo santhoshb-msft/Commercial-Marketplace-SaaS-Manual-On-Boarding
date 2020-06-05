@@ -1,24 +1,18 @@
-﻿using Microsoft.Marketplace;
-using Microsoft.Marketplace.SaaS;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using CommandCenter.Models;
+using Microsoft.Extensions.Options;
+using Microsoft.Marketplace;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
-namespace Dashboard.Mail
+namespace CommandCenter.Mail
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dashboard.Models;
-
-    using Microsoft.Extensions.Options;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-
-    using SendGrid;
-    using SendGrid.Helpers.Mail;
-
     public class DashboardEMailHelper : IMarketplaceNotificationHandler
     {
         private const string MailLinkControllerName = "MailLink";

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dashboard.Marketplace
+namespace CommandCenter.Marketplace
 {
     public class MarketplaceClientOptions
     {

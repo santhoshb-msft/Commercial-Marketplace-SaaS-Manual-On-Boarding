@@ -1,9 +1,8 @@
-﻿namespace Dashboard
+﻿using System;
+using CommandCenter.Webhook;
+
+namespace CommandCenter
 {
-    using System;
-
-    using Dashboard.Webhook;
-
     public class NotificationModel
     {
         public string OfferId { get; set; }

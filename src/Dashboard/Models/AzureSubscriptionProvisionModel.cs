@@ -1,15 +1,13 @@
-﻿namespace Dashboard.Models
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Marketplace.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace CommandCenter.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-
-    using Microsoft.AspNetCore.Mvc;
-    using Microsoft.Marketplace.Models;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Converters;
-
     [BindProperties]
     public class AzureSubscriptionProvisionModel
     {

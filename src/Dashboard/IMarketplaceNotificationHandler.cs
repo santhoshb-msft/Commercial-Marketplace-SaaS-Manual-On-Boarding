@@ -1,10 +1,9 @@
-﻿namespace Dashboard
+﻿using System.Threading;
+using System.Threading.Tasks;
+using CommandCenter.Models;
+
+namespace CommandCenter
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    using Dashboard.Models;
-
     public interface IMarketplaceNotificationHandler
     {
         Task NotifyChangePlanAsync(NotificationModel notificationModel, CancellationToken cancellationToken = default);

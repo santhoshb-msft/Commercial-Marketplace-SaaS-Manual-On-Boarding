@@ -1,4 +1,4 @@
-﻿namespace Dashboard.Mail
+﻿namespace CommandCenter.Mail
 {
     public class MailOptions
     {
