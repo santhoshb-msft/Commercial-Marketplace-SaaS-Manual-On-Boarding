@@ -9,16 +9,16 @@ using Newtonsoft.Json;
 
 namespace CommandCenter.Controllers
 {
-    // Removing the authorize attribute. This will be relevant once we start receivint JWT from the marketplac engine
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [RequireHttps]
+    //[AllowAnonymous]
     public class WebHookController : Controller
     {
         private readonly ILogger<WebHookController> logger;
 
-        private readonly IWebhookProcessor webhookProcessor;
-
         private readonly CommandCenterOptions options;
+
+        private readonly IWebhookProcessor webhookProcessor;
 
         public WebHookController(
             IWebhookProcessor webhookProcessor,
@@ -27,17 +27,18 @@ namespace CommandCenter.Controllers
         {
             this.webhookProcessor = webhookProcessor;
             this.logger = logger;
-            this.options = optionsMonitor.CurrentValue;
+            options = optionsMonitor.CurrentValue;
         }
 
         [HttpPost]
         public async Task<IActionResult> Index([FromBody] WebhookPayload payload)
         {
             // Options is injected as a singleton. This is not a good hack, but need to pass the host name and port
-            this.options.BaseUrl = $"{this.Request.Scheme}://{this.Request.Host}/";
-            await this.webhookProcessor.ProcessWebhookNotificationAsync(payload);
-            this.logger.LogInformation($"Received webhook request: {JsonConvert.SerializeObject(payload)}");
-            return this.Ok();
+            logger.LogInformation($"Received webhook request: {JsonConvert.SerializeObject(payload)}");
+
+            await webhookProcessor.ProcessWebhookNotificationAsync(payload);
+
+            return Ok();
         }
     }
 }

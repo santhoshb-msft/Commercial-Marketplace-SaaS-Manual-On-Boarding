@@ -3,6 +3,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using CommandCenter.Authorization;
+using CommandCenter.Marketplace;
 using CommandCenter.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,9 +18,9 @@ namespace CommandCenter.Controllers
     [Authorize]
     public class LandingPageController : Controller
     {
+        private readonly ILogger<LandingPageController> logger;
         private readonly IMarketplaceClient marketplaceClient;
         private readonly IMarketplaceNotificationHandler notificationHandler;
-        private readonly ILogger<LandingPageController> logger;
 
         private readonly CommandCenterOptions options;
 
@@ -31,7 +33,7 @@ namespace CommandCenter.Controllers
             this.marketplaceClient = marketplaceClient;
             this.notificationHandler = notificationHandler;
             this.logger = logger;
-            this.options = commandCenterOptions.CurrentValue;
+            options = commandCenterOptions.CurrentValue;
         }
 
         [HttpPost]
@@ -40,17 +42,17 @@ namespace CommandCenter.Controllers
             AzureSubscriptionProvisionModel provisionModel,
             CancellationToken cancellationToken)
         {
-            var urlBase = $"{this.Request.Scheme}://{this.Request.Host}";
-            this.options.BaseUrl = urlBase;
+            var urlBase = $"{Request.Scheme}://{Request.Host}";
+            options.BaseUrl = urlBase;
             try
             {
-                await this.ProcessLandingPageAsync(provisionModel, cancellationToken);
+                await ProcessLandingPageAsync(provisionModel, cancellationToken);
 
-                return this.RedirectToAction(nameof(this.Success));
+                return RedirectToAction(nameof(Success));
             }
             catch (Exception ex)
             {
-                return this.BadRequest(ex);
+                return BadRequest(ex);
             }
         }
 
@@ -59,51 +61,51 @@ namespace CommandCenter.Controllers
         {
             if (string.IsNullOrEmpty(token))
             {
-                this.ModelState.AddModelError(string.Empty, "Token URL parameter cannot be empty");
-                return this.View();
+                ModelState.AddModelError(string.Empty, "Token URL parameter cannot be empty");
+                return View();
             }
 
-            var provisioningModel = await this.BuildLandingPageModel(token, cancellationToken);
+            var provisioningModel = await BuildLandingPageModel(token, cancellationToken);
 
             if (provisioningModel != default)
             {
-                provisioningModel.FullName = (this.User.Identity as ClaimsIdentity)?.FindFirst("name")?.Value;
-                provisioningModel.Email = this.User.Identity.GetUserEmail();
-                provisioningModel.BusinessUnitContactEmail = this.User.Identity.GetUserEmail();
+                provisioningModel.FullName = (User.Identity as ClaimsIdentity)?.FindFirst("name")?.Value;
+                provisioningModel.Email = User.Identity.GetUserEmail();
+                provisioningModel.BusinessUnitContactEmail = User.Identity.GetUserEmail();
 
-                return this.View(provisioningModel);
+                return View(provisioningModel);
             }
 
-            this.ModelState.AddModelError(string.Empty, "Cannot resolve subscription");
-            return this.View();
+            ModelState.AddModelError(string.Empty, "Cannot resolve subscription");
+            return View();
         }
 
         public ActionResult Success()
         {
-            return this.View();
+            return View();
         }
 
         private async Task<AzureSubscriptionProvisionModel> BuildLandingPageModel(
-           string token,
-           CancellationToken cancellationToken)
+            string token,
+            CancellationToken cancellationToken)
         {
-            var resolvedSubscription = await this.marketplaceClient.Fulfillment.ResolveAsync(
-                                           token,
-                                           null,
-                                           null,
-                                           cancellationToken);
+            var resolvedSubscription = await marketplaceClient.Fulfillment.ResolveAsync(
+                token,
+                null,
+                null,
+                cancellationToken);
 
             if (resolvedSubscription == default(ResolvedSubscription)) return default;
 
             var existingSubscription = resolvedSubscription.Subscription;
 
-            var availablePlans = (await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(
-                                      resolvedSubscription.Id.Value,
-                                      null,
-                                      null,
-                                      cancellationToken));
+            var availablePlans = await marketplaceClient.Fulfillment.ListAvailablePlansAsync(
+                resolvedSubscription.Id.Value,
+                null,
+                null,
+                cancellationToken);
 
-            var pendingOperations = await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
+            var pendingOperations = await marketplaceClient.SubscriptionOperations.ListOperationsAsync(
                 resolvedSubscription.Id.Value,
                 null,
                 null,
@@ -135,15 +137,9 @@ namespace CommandCenter.Controllers
         {
             // A new subscription will have PendingFulfillmentStart as status
             if (provisionModel.SubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
-            {
-                
-                await this.notificationHandler.ProcessActivateAsync(provisionModel, cancellationToken);
-                
-            }
+                await notificationHandler.ProcessActivateAsync(provisionModel, cancellationToken);
             else
-            {
-                await this.notificationHandler.ProcessChangePlanAsync(provisionModel, cancellationToken);
-            }
+                await notificationHandler.ProcessChangePlanAsync(provisionModel, cancellationToken);
         }
     }
 }

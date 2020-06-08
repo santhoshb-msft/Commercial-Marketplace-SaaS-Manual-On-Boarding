@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using CommandCenter.Marketplace;
 using CommandCenter.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,19 +24,19 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await this.marketplaceClient.Fulfillment.ActivateSubscriptionAsync(
-                             notificationModel.SubscriptionId,
-                             null,
-                             null,
-                             notificationModel.PlanId,
-                             null,
-                             cancellationToken);
+            await marketplaceClient.Fulfillment.ActivateSubscriptionAsync(
+                notificationModel.SubscriptionId,
+                null,
+                null,
+                notificationModel.PlanId,
+                null,
+                cancellationToken);
 
-            return this.View(
-                           new ActivateActionViewModel
-                               {
-                                   SubscriptionId = notificationModel.SubscriptionId, PlanId = notificationModel.PlanId
-                               });
+            return View(
+                new ActivateActionViewModel
+                {
+                    SubscriptionId = notificationModel.SubscriptionId, PlanId = notificationModel.PlanId
+                });
         }
 
         [HttpGet]
@@ -43,9 +44,9 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await this.UpdateOperationAsync(notificationModel, cancellationToken);
+            await UpdateOperationAsync(notificationModel, cancellationToken);
 
-            return this.View("OperationUpdate", notificationModel);
+            return View("OperationUpdate", notificationModel);
         }
 
         [HttpGet]
@@ -53,9 +54,9 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await this.UpdateOperationAsync(notificationModel, cancellationToken);
+            await UpdateOperationAsync(notificationModel, cancellationToken);
 
-            return this.View("OperationUpdate", notificationModel);
+            return View("OperationUpdate", notificationModel);
         }
 
         [HttpGet]
@@ -63,9 +64,9 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await this.UpdateOperationAsync(notificationModel, cancellationToken);
+            await UpdateOperationAsync(notificationModel, cancellationToken);
 
-            return this.View("OperationUpdate", notificationModel);
+            return View("OperationUpdate", notificationModel);
         }
 
         [HttpGet]
@@ -73,42 +74,42 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await this.UpdateOperationAsync(notificationModel, cancellationToken);
+            await UpdateOperationAsync(notificationModel, cancellationToken);
 
-            return this.View("OperationUpdate", notificationModel);
+            return View("OperationUpdate", notificationModel);
         }
 
         [HttpGet]
         public async Task<IActionResult> Update(NotificationModel notificationModel)
         {
-            var result = await this.marketplaceClient.Fulfillment.UpdateSubscriptionAsync(
-                             notificationModel.SubscriptionId,
-                             null,
-                             null,
-                             notificationModel.PlanId,
-                             null,
-                             CancellationToken.None);
+            var result = await marketplaceClient.Fulfillment.UpdateSubscriptionAsync(
+                notificationModel.SubscriptionId,
+                null,
+                null,
+                notificationModel.PlanId,
+                null,
+                CancellationToken.None);
 
-            return this.View(
-                           new ActivateActionViewModel
-                               {
-                                   SubscriptionId = notificationModel.SubscriptionId, PlanId = notificationModel.PlanId
-                               });
+            return View(
+                new ActivateActionViewModel
+                {
+                    SubscriptionId = notificationModel.SubscriptionId, PlanId = notificationModel.PlanId
+                });
         }
 
         private async Task UpdateOperationAsync(
             NotificationModel payload,
             CancellationToken cancellationToken)
         {
-            await this.marketplaceClient.SubscriptionOperations.UpdateOperationStatusAsync(
-                       payload.SubscriptionId,
-                       payload.OperationId,
-                       null,
-                       null,
-                       payload.PlanId,
-                       payload.Quantity,
-                       UpdateOperationStatusEnum.Success,
-                       cancellationToken);
+            await marketplaceClient.SubscriptionOperations.UpdateOperationStatusAsync(
+                payload.SubscriptionId,
+                payload.OperationId,
+                null,
+                null,
+                payload.PlanId,
+                payload.Quantity,
+                UpdateOperationStatusEnum.Success,
+                cancellationToken);
         }
     }
 }

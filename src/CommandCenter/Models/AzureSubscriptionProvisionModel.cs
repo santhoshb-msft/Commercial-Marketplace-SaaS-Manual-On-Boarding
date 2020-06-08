@@ -11,8 +11,7 @@ namespace CommandCenter.Models
     [BindProperties]
     public class AzureSubscriptionProvisionModel
     {
-        [Display(Name = "Available plans")]
-        public IList<Plan> AvailablePlans { get; set; }
+        [Display(Name = "Available plans")] public IList<Plan> AvailablePlans { get; set; }
 
         [Display(Name = "Business unit contact email")]
         public string BusinessUnitContactEmail { get; set; }
@@ -22,16 +21,13 @@ namespace CommandCenter.Models
         [Display(Name = "Subscriber full name")]
         public string FullName { get; set; }
 
-        [BindProperty]
-        public string NewPlanId { get; set; }
+        [BindProperty] public string NewPlanId { get; set; }
 
-        [Display(Name = "Offer ID")]
-        public string OfferId { get; set; }
+        [Display(Name = "Offer ID")] public string OfferId { get; set; }
 
         public bool PendingOperations { get; set; }
 
-        [Display(Name = "Current plan")]
-        public string PlanId { get; set; }
+        [Display(Name = "Current plan")] public string PlanId { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
         public TargetContosoRegionEnum Region { get; set; }
@@ -39,13 +35,11 @@ namespace CommandCenter.Models
         [Display(Name = "SaaS Subscription Id")]
         public Guid SubscriptionId { get; set; }
 
-        [Display(Name = "Subscription name")]
-        public string SubscriptionName { get; set; }
+        [Display(Name = "Subscription name")] public string SubscriptionName { get; set; }
 
         public SubscriptionStatusEnum SubscriptionStatus { get; set; }
 
-        [Display(Name = "Purchaser email")]
-        public string PurchaserEmail { get; set; }
+        [Display(Name = "Purchaser email")] public string PurchaserEmail { get; set; }
 
         [Display(Name = "Purchaser AAD TenantId")]
         public Guid PurchaserTenantId { get; set; }

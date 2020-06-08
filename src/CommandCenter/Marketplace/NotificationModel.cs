@@ -1,7 +1,7 @@
 ﻿using System;
 using CommandCenter.Webhook;
 
-namespace CommandCenter
+namespace CommandCenter.Marketplace
 {
     public class NotificationModel
     {
@@ -22,14 +22,14 @@ namespace CommandCenter
         public static NotificationModel FromWebhookPayload(WebhookPayload payload)
         {
             return new NotificationModel
-                       {
-                           OfferId = payload.OfferId,
-                           OperationId = payload.OperationId,
-                           PlanId = payload.PlanId,
-                           PublisherId = payload.PublisherId,
-                           Quantity = payload.Quantity,
-                           SubscriptionId = payload.SubscriptionId
-                       };
+            {
+                OfferId = payload.OfferId,
+                OperationId = payload.OperationId,
+                PlanId = payload.PlanId,
+                PublisherId = payload.PublisherId,
+                Quantity = payload.Quantity,
+                SubscriptionId = payload.SubscriptionId
+            };
         }
     }
 }

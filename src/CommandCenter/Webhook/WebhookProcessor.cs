@@ -9,7 +9,6 @@ namespace CommandCenter.Webhook
 {
     public class WebhookProcessor : IWebhookProcessor
     {
-
         private readonly ILogger<WebhookProcessor> logger;
         private readonly IMarketplaceClient marketplaceClient;
         private readonly IWebhookHandler webhookHandler;
@@ -26,9 +25,9 @@ namespace CommandCenter.Webhook
         public async Task ProcessWebhookNotificationAsync(WebhookPayload payload,
             CancellationToken cancellationToken = default)
         {
-
             // Always query the fulfillment API for the received Operation for security reasons. Webhook endpoint is not authenticated.
-            var operationDetails = await this.marketplaceClient.SubscriptionOperations.GetOperationStatusAsync(payload.SubscriptionId,
+            var operationDetails = await marketplaceClient.SubscriptionOperations.GetOperationStatusAsync(
+                payload.SubscriptionId,
                 payload.OperationId,
                 null,
                 null,
@@ -40,9 +39,6 @@ namespace CommandCenter.Webhook
                     $"Operation query returned {JsonConvert.SerializeObject(operationDetails)} for subscription {payload.SubscriptionId} operation {payload.OperationId}");
                 return;
             }
-
-            logger.LogInformation(
-                $"Received webhook notification with payload, {JsonConvert.SerializeObject(payload)}");
 
             switch (payload.Action)
             {
@@ -66,6 +62,8 @@ namespace CommandCenter.Webhook
                     await webhookHandler.ReinstatedAsync(payload);
                     break;
 
+                case WebhookAction.Transfer:
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

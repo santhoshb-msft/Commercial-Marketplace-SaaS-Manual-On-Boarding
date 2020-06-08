@@ -7,7 +7,8 @@ namespace CommandCenter.Marketplace
 {
     public interface IOperationsStore
     {
-        Task<IEnumerable<OperationRecord>> GetAllSubscriptionRecordsAsync(Guid subscriptionId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<OperationRecord>> GetAllSubscriptionRecordsAsync(Guid subscriptionId,
+            CancellationToken cancellationToken = default);
 
         Task RecordAsync(
             Guid subscriptionId,

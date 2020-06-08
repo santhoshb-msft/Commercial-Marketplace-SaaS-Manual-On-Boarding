@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Security.Principal;
 
-namespace CommandCenter
+namespace CommandCenter.Authorization
 {
     public static class ClaimsIdentityExtensions
     {
@@ -11,8 +11,8 @@ namespace CommandCenter
             if (!(principal is ClaimsIdentity identity)) throw new ApplicationException("Not of ClaimsIdentity type");
 
             return string.IsNullOrEmpty(identity.Name)
-                       ? identity.FindFirst("preferred_username")?.Value
-                       : identity.Name;
+                ? identity.FindFirst("preferred_username")?.Value
+                : identity.Name;
         }
     }
 }

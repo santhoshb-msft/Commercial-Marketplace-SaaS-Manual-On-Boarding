@@ -17,33 +17,31 @@ namespace CommandCenter.Marketplace
             tableClient = CloudStorageAccount.Parse(storageAccountConnectionString).CreateCloudTableClient();
         }
 
-        public async Task<IEnumerable<OperationRecord>> GetAllSubscriptionRecordsAsync(Guid subscriptionId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<OperationRecord>> GetAllSubscriptionRecordsAsync(Guid subscriptionId,
+            CancellationToken cancellationToken = default)
         {
             var table = tableClient.GetTableReference(TableName);
             var result = new List<OperationRecord>();
 
-            if (!table.Exists())
-            {
-                return result;
-            }
+            if (!table.Exists()) return result;
 
-            var query = new TableQuery().Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, subscriptionId.ToString()));
+            var query = new TableQuery().Where(TableQuery.GenerateFilterCondition("PartitionKey",
+                QueryComparisons.Equal, subscriptionId.ToString()));
 
             TableContinuationToken token = null;
 
             do
             {
-                var segment = await table.ExecuteQuerySegmentedAsync<OperationRecord>(
-                                  query,
-                                  (key, rowKey, timestamp, properties, etag) => new OperationRecord(key, rowKey),
-                                  token,
-                                  cancellationToken);
+                var segment = await table.ExecuteQuerySegmentedAsync(
+                    query,
+                    (key, rowKey, timestamp, properties, etag) => new OperationRecord(key, rowKey),
+                    token,
+                    cancellationToken);
 
-                result.AddRange(segment.Results.Select(r => r as OperationRecord));
+                result.AddRange(segment.Results.Select(r => r));
 
                 token = segment.ContinuationToken;
-            }
-            while (token != default);
+            } while (token != default);
 
             return result;
         }

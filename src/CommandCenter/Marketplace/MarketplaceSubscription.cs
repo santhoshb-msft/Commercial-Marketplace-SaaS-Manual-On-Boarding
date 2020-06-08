@@ -16,8 +16,7 @@ namespace CommandCenter.Marketplace
 
         public Guid SubscriptionId { get; set; }
 
-        [Display(Name = "Name")]
-        public string SubscriptionName { get; set; }
+        [Display(Name = "Name")] public string SubscriptionName { get; set; }
 
         internal static MarketplaceSubscription From(Subscription subscription, SubscriptionStatusEnum newState)
         {

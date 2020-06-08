@@ -13,7 +13,7 @@ namespace CommandCenter.Mail
             this.uriBuilder = uriBuilder;
         }
 
-        public Uri Uri => this.uriBuilder.Uri;
+        public Uri Uri => uriBuilder.Uri;
 
         public static FluentUriBuilder Start(string uriString)
         {
@@ -23,21 +23,21 @@ namespace CommandCenter.Mail
         public FluentUriBuilder AddPath(string path)
         {
             _ = path.Trim('/');
-            this.uriBuilder.Path += this.uriBuilder.Path == "/" ? $"{path}" : $"/{path}";
+            uriBuilder.Path += uriBuilder.Path == "/" ? $"{path}" : $"/{path}";
 
             return this;
         }
 
         public FluentUriBuilder AddQuery(string queryParameterName, string queryParameter)
         {
-            var charsToRemove = new[] { '&', '?', '=' };
+            var charsToRemove = new[] {'&', '?', '='};
 
             var cleanParameterName = queryParameterName.Trim(charsToRemove);
             var cleanParameter = queryParameter.Trim(charsToRemove);
 
-            var currentQuery = HttpUtility.ParseQueryString(this.uriBuilder.Uri.Query);
+            var currentQuery = HttpUtility.ParseQueryString(uriBuilder.Uri.Query);
             currentQuery.Add(queryParameterName, queryParameter);
-            this.uriBuilder.Query = currentQuery.AllKeys.Select(k => $"{k}={currentQuery[k]}")
+            uriBuilder.Query = currentQuery.AllKeys.Select(k => $"{k}={currentQuery[k]}")
                 .Aggregate((working, next) => $"{working}&{next}");
 
             return this;

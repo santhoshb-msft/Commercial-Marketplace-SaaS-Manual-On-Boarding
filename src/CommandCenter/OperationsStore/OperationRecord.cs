@@ -7,34 +7,22 @@ namespace CommandCenter.OperationsStore
     {
         public OperationRecord(string subscriptionId, string operationId)
         {
-            this.PartitionKey = subscriptionId;
-            this.RowKey = operationId;
+            PartitionKey = subscriptionId;
+            RowKey = operationId;
         }
 
         public Guid OperationId
         {
-            get
-            {
-                return Guid.Parse(this.RowKey);
-            }
+            get => Guid.Parse(RowKey);
 
-            set
-            {
-                this.RowKey = value.ToString();
-            }
+            set => RowKey = value.ToString();
         }
 
         public Guid SubscriptionId
         {
-            get
-            {
-                return Guid.Parse(this.PartitionKey);
-            }
+            get => Guid.Parse(PartitionKey);
 
-            set
-            {
-                this.PartitionKey = value.ToString();
-            }
+            set => PartitionKey = value.ToString();
         }
     }
 }
