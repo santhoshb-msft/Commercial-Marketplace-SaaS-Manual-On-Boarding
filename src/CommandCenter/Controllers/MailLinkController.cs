@@ -8,7 +8,7 @@ using Microsoft.Marketplace.Models;
 
 namespace CommandCenter.Controllers
 {
-    [Authorize("DashboardAdmin")]
+    [Authorize("CommandCenterAdmin")]
     public class MailLinkController : Controller
     {
         private readonly IMarketplaceClient marketplaceClient;

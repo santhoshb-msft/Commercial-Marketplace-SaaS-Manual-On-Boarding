@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace CommandCenter.Authorization
 {
-    public class DashboardAdminHandler : AuthorizationHandler<DashboardAdminRequirement>
+    public class CommandCenterAdminHandler : AuthorizationHandler<CommandCenterAdminRequirement>
     {
         protected override Task HandleRequirementAsync(
             AuthorizationHandlerContext context,
-            DashboardAdminRequirement requirement)
+            CommandCenterAdminRequirement requirement)
         {
             if (context.User == null) return Task.CompletedTask;
 

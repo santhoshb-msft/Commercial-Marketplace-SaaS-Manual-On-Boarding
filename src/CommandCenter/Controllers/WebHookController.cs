@@ -18,11 +18,11 @@ namespace CommandCenter.Controllers
 
         private readonly IWebhookProcessor webhookProcessor;
 
-        private readonly DashboardOptions options;
+        private readonly CommandCenterOptions options;
 
         public WebHookController(
             IWebhookProcessor webhookProcessor,
-            IOptionsMonitor<DashboardOptions> optionsMonitor,
+            IOptionsMonitor<CommandCenterOptions> optionsMonitor,
             ILogger<WebHookController> logger)
         {
             this.webhookProcessor = webhookProcessor;

@@ -2,11 +2,11 @@
 
 namespace CommandCenter
 {
-    public class DashboardOptions
+    public class CommandCenterOptions
     {
         public string BaseUrl { get; set; }
 
-        public string DashboardAdmin { get; set; }
+        public string CommandCenterAdmin { get; set; }
 
         public MailOptions Mail { get; set; }
 

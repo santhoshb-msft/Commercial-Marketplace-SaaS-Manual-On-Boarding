@@ -31,13 +31,13 @@ namespace CommandCenter.Models
             return new SubscriptionViewModel
                        {
                            PlanId = marketplaceSubscription.PlanId,
-                           Quantity = marketplaceSubscription.Quantity.Value,
-                           SubscriptionId = marketplaceSubscription.Id.Value,
+                           Quantity = marketplaceSubscription.Quantity ?? 0,
+                           SubscriptionId = marketplaceSubscription.Id ?? Guid.Empty,
                            OfferId = marketplaceSubscription.OfferId,
-                           State = marketplaceSubscription.SaasSubscriptionStatus.Value,
+                           State = marketplaceSubscription.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
                            SubscriptionName = marketplaceSubscription.Name,
                            PurchaserEmail = marketplaceSubscription.Purchaser.EmailId,
-                           PurchaserTenantId = marketplaceSubscription.Purchaser.TenantId.Value
+                           PurchaserTenantId = marketplaceSubscription.Purchaser.TenantId ?? Guid.Empty
                        };
         }
 

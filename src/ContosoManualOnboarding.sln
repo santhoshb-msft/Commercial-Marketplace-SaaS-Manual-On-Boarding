@@ -8,15 +8,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		global.json = global.json
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dashboard", "Dashboard", "{65B6D194-E813-4944-B3A8-1AE6C4E316D9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandCenter", "Dashboard\CommandCenter.csproj", "{52F191D4-EDB6-4B1B-B705-FED17D513CFC}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SDK", "SDK", "{53E836A0-CCE6-4B07-9751-1AADCABC9C16}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SaaS.SDK.Client", "commercial-marketplace-saas-sdk-client-dotnet\src\SaaS.SDK.Client\SaaS.SDK.Client.csproj", "{40AFDF62-2ACC-40D6-8400-9C5D2CA5776E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommandCenter", "CommandCenter", "{65B6D194-E813-4944-B3A8-1AE6C4E316D9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.Marketplace", "..\..\..\commercial-marketplace-saas-for-net\sdk\src\Microsoft.Marketplace\Microsoft.Marketplace.csproj", "{82345953-F4D8-412B-9F8C-AB4DF2731285}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommandCenter", "CommandCenter\CommandCenter.csproj", "{589188EA-1752-4C40-B555-A481FB199FBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,26 +20,20 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{52F191D4-EDB6-4B1B-B705-FED17D513CFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{52F191D4-EDB6-4B1B-B705-FED17D513CFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{52F191D4-EDB6-4B1B-B705-FED17D513CFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{52F191D4-EDB6-4B1B-B705-FED17D513CFC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{40AFDF62-2ACC-40D6-8400-9C5D2CA5776E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{40AFDF62-2ACC-40D6-8400-9C5D2CA5776E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{40AFDF62-2ACC-40D6-8400-9C5D2CA5776E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{40AFDF62-2ACC-40D6-8400-9C5D2CA5776E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{82345953-F4D8-412B-9F8C-AB4DF2731285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{82345953-F4D8-412B-9F8C-AB4DF2731285}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82345953-F4D8-412B-9F8C-AB4DF2731285}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82345953-F4D8-412B-9F8C-AB4DF2731285}.Release|Any CPU.Build.0 = Release|Any CPU
+		{589188EA-1752-4C40-B555-A481FB199FBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{589188EA-1752-4C40-B555-A481FB199FBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{589188EA-1752-4C40-B555-A481FB199FBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{589188EA-1752-4C40-B555-A481FB199FBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{52F191D4-EDB6-4B1B-B705-FED17D513CFC} = {65B6D194-E813-4944-B3A8-1AE6C4E316D9}
-		{53E836A0-CCE6-4B07-9751-1AADCABC9C16} = {65B6D194-E813-4944-B3A8-1AE6C4E316D9}
-		{40AFDF62-2ACC-40D6-8400-9C5D2CA5776E} = {53E836A0-CCE6-4B07-9751-1AADCABC9C16}
+		{589188EA-1752-4C40-B555-A481FB199FBD} = {65B6D194-E813-4944-B3A8-1AE6C4E316D9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2EF50173-E909-42F6-89B2-F4B704BD4580}

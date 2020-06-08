@@ -14,19 +14,19 @@ using Microsoft.Marketplace.Models;
 
 namespace CommandCenter.Controllers
 {
-    [Authorize("DashboardAdmin")]
+    [Authorize("CommandCenterAdmin")]
     public class SubscriptionsController : Controller
     {
         private readonly IMarketplaceClient marketplaceClient;
 
         private readonly IOperationsStore operationsStore;
 
-        private readonly DashboardOptions options;
+        private readonly CommandCenterOptions options;
 
         public SubscriptionsController(
             IMarketplaceClient marketplaceClient,
             IOperationsStore operationsStore,
-            IOptionsMonitor<DashboardOptions> options)
+            IOptionsMonitor<CommandCenterOptions> options)
         {
             this.marketplaceClient = marketplaceClient;
             this.operationsStore = operationsStore;
@@ -149,17 +149,19 @@ namespace CommandCenter.Controllers
                                            null,
                                            cancellationToken);
 
+                    var pendingOperations = await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
+                        subscriptionId,
+                        null,
+                        null,
+                        cancellationToken);
+
                     var updateSubscriptionViewModel = new UpdateSubscriptionViewModel
                     {
                         SubscriptionId = subscriptionId,
                         SubscriptionName = subscription.Name,
                         CurrentPlan = subscription.PlanId,
                         AvailablePlans = availablePlans.Plans,
-                        PendingOperations = (await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
-                                                                           subscriptionId,
-                                                                           null,
-                                                                           null,
-                                                                           cancellationToken)).Any(
+                        PendingOperations = pendingOperations.Operations.Any(
                                                                       o => o.Status == OperationStatusEnum.InProgress)
                     };
 
@@ -189,13 +191,13 @@ namespace CommandCenter.Controllers
             UpdateSubscriptionViewModel model,
             CancellationToken cancellationToken)
         {
+            var pendingOperations = await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
+                model.SubscriptionId,
+                null,
+                null,
+                cancellationToken);
 
-            if ((await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
-                     model.SubscriptionId,
-                     null,
-                     null,
-                     cancellationToken))
-                .Any(o => o.Status == OperationStatusEnum.InProgress)) return this.RedirectToAction("Index");
+            if (pendingOperations.Operations.Any(o => o.Status == OperationStatusEnum.InProgress)) return this.RedirectToAction("Index");
             var updateResult = await this.marketplaceClient.Fulfillment.UpdateSubscriptionAsync(
                                    model.SubscriptionId,
                                    null,

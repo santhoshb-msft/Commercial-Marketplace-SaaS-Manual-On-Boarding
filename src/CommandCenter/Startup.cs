@@ -108,7 +108,7 @@ namespace CommandCenter
                             false; // accept several tenants (here simplified)
                     });
 
-            services.Configure<DashboardOptions>(this.configuration.GetSection("Dashboard"));
+            services.Configure<CommandCenterOptions>(this.configuration.GetSection("CommandCenter"));
 
             services.TryAddScoped<IMarketplaceClient>(sp =>
             {
@@ -117,7 +117,7 @@ namespace CommandCenter
                 return new MarketplaceClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, marketplaceClientOptions.AppKey);
             });
 
-            services.TryAddScoped<IOperationsStore>(sp => new AzureTableOperationsStore(this.configuration["FulfillmentClient:OperationsStoreConnectionString"]));
+            services.TryAddScoped<IOperationsStore>(sp => new AzureTableOperationsStore(this.configuration["CommandCenter:OperationsStoreConnectionString"]));
 
             // Hack to save the host name and port during the handling the request. Please see the WebhookController and ContosoWebhookHandler implementations
             services.AddSingleton<ContosoWebhookHandlerOptions>();
@@ -127,16 +127,16 @@ namespace CommandCenter
 
             // It is email in this sample, but you can plug in anything that implements the interface and communicate with an existing API.
             // In the email case, the existing API is the SendGrid API...
-            services.TryAddScoped<IMarketplaceNotificationHandler, DashboardEMailHelper>();
+            services.TryAddScoped<IMarketplaceNotificationHandler, CommandCenterEMailHelper>();
 
             services.AddAuthorization(
                 options => options.AddPolicy(
-                    "DashboardAdmin",
+                    "CommandCenterAdmin",
                     policy => policy.Requirements.Add(
-                        new DashboardAdminRequirement(
-                            this.configuration.GetSection("Dashboard").Get<DashboardOptions>().DashboardAdmin))));
+                        new CommandCenterAdminRequirement(
+                            this.configuration.GetSection("CommandCenter").Get<CommandCenterOptions>().CommandCenterAdmin))));
 
-            services.AddSingleton<IAuthorizationHandler, DashboardAdminHandler>();
+            services.AddSingleton<IAuthorizationHandler, CommandCenterAdminHandler>();
 
             services.AddControllers(options =>
                 {

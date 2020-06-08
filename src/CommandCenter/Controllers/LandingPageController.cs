@@ -20,10 +20,10 @@ namespace CommandCenter.Controllers
         private readonly IMarketplaceNotificationHandler notificationHandler;
         private readonly ILogger<LandingPageController> logger;
 
-        private readonly DashboardOptions options;
+        private readonly CommandCenterOptions options;
 
         public LandingPageController(
-            IOptionsMonitor<DashboardOptions> dashboardOptions,
+            IOptionsMonitor<CommandCenterOptions> commandCenterOptions,
             IMarketplaceClient marketplaceClient,
             IMarketplaceNotificationHandler notificationHandler,
             ILogger<LandingPageController> logger)
@@ -31,7 +31,7 @@ namespace CommandCenter.Controllers
             this.marketplaceClient = marketplaceClient;
             this.notificationHandler = notificationHandler;
             this.logger = logger;
-            this.options = dashboardOptions.CurrentValue;
+            this.options = commandCenterOptions.CurrentValue;
         }
 
         [HttpPost]
@@ -103,6 +103,12 @@ namespace CommandCenter.Controllers
                                       null,
                                       cancellationToken));
 
+            var pendingOperations = await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
+                resolvedSubscription.Id.Value,
+                null,
+                null,
+                cancellationToken);
+
             var provisioningModel = new AzureSubscriptionProvisionModel
             {
                 PlanId = resolvedSubscription.PlanId,
@@ -110,19 +116,14 @@ namespace CommandCenter.Controllers
                 OfferId = resolvedSubscription.OfferId,
                 SubscriptionName = resolvedSubscription.SubscriptionName,
                 PurchaserEmail = existingSubscription.Purchaser.EmailId,
-                PurchaserTenantId = existingSubscription.Purchaser.TenantId.Value,
+                PurchaserTenantId = existingSubscription.Purchaser.TenantId ?? Guid.Empty,
 
                 // Assuming this will be set to the value the customer already set when subscribing, if we are here after the initial subscription activation
                 // Landing page is used both for initial provisioning and configuration of the subscription.
                 Region = TargetContosoRegionEnum.NorthAmerica,
                 AvailablePlans = availablePlans.Plans,
-                SubscriptionStatus = existingSubscription.SaasSubscriptionStatus.Value,
-                PendingOperations =
-                                                (await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
-                                                     resolvedSubscription.Id.Value,
-                                                     null,
-                                                     null,
-                                                     cancellationToken)).Any(o => o.Status == OperationStatusEnum.InProgress)
+                SubscriptionStatus = existingSubscription.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
+                PendingOperations = pendingOperations.Operations.Any(o => o.Status == OperationStatusEnum.InProgress)
             };
 
             return provisioningModel;

@@ -13,16 +13,16 @@ using SendGrid.Helpers.Mail;
 
 namespace CommandCenter.Mail
 {
-    public class DashboardEMailHelper : IMarketplaceNotificationHandler
+    public class CommandCenterEMailHelper : IMarketplaceNotificationHandler
     {
         private const string MailLinkControllerName = "MailLink";
 
         private readonly IMarketplaceClient marketplaceClient;
 
-        private readonly DashboardOptions options;
+        private readonly CommandCenterOptions options;
 
-        public DashboardEMailHelper(
-            IOptionsMonitor<DashboardOptions> optionsMonitor,
+        public CommandCenterEMailHelper(
+            IOptionsMonitor<CommandCenterOptions> optionsMonitor,
             IMarketplaceClient marketplaceClient)
         {
             this.marketplaceClient = marketplaceClient;
@@ -195,7 +195,7 @@ namespace CommandCenter.Mail
         {
             var msg = new SendGridMessage();
 
-            msg.SetFrom(new EmailAddress(this.options.Mail.FromEmail, "Marketplace Dashboard"));
+            msg.SetFrom(new EmailAddress(this.options.Mail.FromEmail, "Marketplace command center"));
 
             var recipients = new List<EmailAddress> { new EmailAddress(this.options.Mail.OperationsTeamEmail) };
 
