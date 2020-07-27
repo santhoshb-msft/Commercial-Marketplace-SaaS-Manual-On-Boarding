@@ -19,14 +19,12 @@ namespace CommandCenter.Controllers
     [Authorize("CommandCenterAdmin")]
     public class MailLinkController : Controller
     {
-        private readonly IMarketplaceSaaSClient marketplaceClient;
+        private readonly IMarketplaceProcessor marketplaceProcessor;
+        private readonly IMarketplaceClient marketplaceClient;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="MailLinkController"/> class.
-        /// </summary>
-        /// <param name="marketplaceClient">Marketplace API client.</param>
-        public MailLinkController(IMarketplaceSaaSClient marketplaceClient)
+        public MailLinkController(IMarketplaceProcessor marketplaceProcessor, IMarketplaceClient marketplaceClient)
         {
+            this.marketplaceProcessor = marketplaceProcessor;
             this.marketplaceClient = marketplaceClient;
         }
 
@@ -41,18 +39,7 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            if (notificationModel == null)
-            {
-                throw new ArgumentNullException(nameof(notificationModel));
-            }
-
-            await this.marketplaceClient.FulfillmentOperations.ActivateSubscriptionAsync(
-                notificationModel.SubscriptionId,
-                null,
-                null,
-                notificationModel.PlanId,
-                null,
-                cancellationToken).ConfigureAwait(false);
+            await this.marketplaceProcessor.ActivateSubscriptionAsync(notificationModel.SubscriptionId, notificationModel.PlanId, cancellationToken);
 
             return this.View(
                 new ActivateActionViewModel
@@ -72,10 +59,7 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            if (notificationModel == null)
-            {
-                throw new ArgumentNullException(nameof(notificationModel));
-            }
+            await OperationAckAsync(notificationModel, cancellationToken);
 
             await this.UpdateOperationAsync(notificationModel, cancellationToken).ConfigureAwait(false);
 
@@ -93,12 +77,7 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            if (notificationModel == null)
-            {
-                throw new ArgumentNullException(nameof(notificationModel));
-            }
-
-            await this.UpdateOperationAsync(notificationModel, cancellationToken).ConfigureAwait(false);
+            await OperationAckAsync(notificationModel, cancellationToken);
 
             return this.View("OperationUpdate", notificationModel);
         }
@@ -114,10 +93,7 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            if (notificationModel == null)
-            {
-                throw new ArgumentNullException(nameof(notificationModel));
-            }
+            await OperationAckAsync(notificationModel, cancellationToken);
 
             await this.UpdateOperationAsync(notificationModel, cancellationToken).ConfigureAwait(false);
 
@@ -135,12 +111,7 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            if (notificationModel == null)
-            {
-                throw new ArgumentNullException(nameof(notificationModel));
-            }
-
-            await this.UpdateOperationAsync(notificationModel, cancellationToken).ConfigureAwait(false);
+            await OperationAckAsync(notificationModel, cancellationToken);
 
             return this.View("OperationUpdate", notificationModel);
         }
@@ -174,24 +145,11 @@ namespace CommandCenter.Controllers
                 });
         }
 
-        private async Task UpdateOperationAsync(
+        private async Task OperationAckAsync(
             NotificationModel payload,
             CancellationToken cancellationToken)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            await this.marketplaceClient.SubscriptionOperations.UpdateOperationStatusAsync(
-                payload.SubscriptionId,
-                payload.OperationId,
-                null,
-                null,
-                payload.PlanId,
-                payload.Quantity,
-                UpdateOperationStatusEnum.Success,
-                cancellationToken).ConfigureAwait(false);
+            await this.marketplaceProcessor.OperationAckAsync(payload.SubscriptionId, payload.OperationId, payload.PlanId, payload.Quantity, cancellationToken);
         }
     }
 }

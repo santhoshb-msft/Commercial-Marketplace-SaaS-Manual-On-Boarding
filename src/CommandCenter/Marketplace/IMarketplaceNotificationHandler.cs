@@ -20,13 +20,7 @@ namespace CommandCenter.Marketplace
         /// <returns>Void.</returns>
         Task NotifyChangePlanAsync(NotificationModel notificationModel, CancellationToken cancellationToken = default);
 
-        /// <summary>
-        /// New subscription notification.
-        /// </summary>
-        /// <param name="provisionModel">Details.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Void.</returns>
-        Task ProcessActivateAsync(
+        Task ProcessNewSubscriptionAsyc(
             AzureSubscriptionProvisionModel provisionModel,
             CancellationToken cancellationToken = default);
 

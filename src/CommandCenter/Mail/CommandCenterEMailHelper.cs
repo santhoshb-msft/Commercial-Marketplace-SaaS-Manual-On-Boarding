@@ -65,8 +65,7 @@ namespace CommandCenter.Mail
                 cancellationToken).ConfigureAwait(false);
         }
 
-        /// <inheritdoc/>
-        public async Task ProcessActivateAsync(
+        public async Task ProcessNewSubscriptionAsyc(
             AzureSubscriptionProvisionModel provisionModel,
             CancellationToken cancellationToken = default)
         {
@@ -268,7 +267,11 @@ namespace CommandCenter.Mail
 
             msg.SetFrom(new EmailAddress(this.options.Mail.FromEmail, "Marketplace command center"));
 
+<<<<<<< HEAD
             var recipients = new List<EmailAddress> { new EmailAddress(this.options.Mail.OperationsTeamEmail) };
+=======
+            var recipients = new List<EmailAddress> { new EmailAddress(options.Mail.OperationsTeamEmail) };
+>>>>>>> afebf60... Removed legacy SDK client, added generated SDK
 
             msg.AddTos(recipients);
 
