@@ -1,7 +1,14 @@
-﻿namespace CommandCenter.Marketplace
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
+
+namespace CommandCenter.Marketplace
 {
     /// <summary>
+<<<<<<< HEAD
     /// Webhook action.
+=======
+    /// Action on webhook.
+>>>>>>> 7ba2462... StyleCop fixes.
     /// </summary>
     public enum WebhookAction
     {
@@ -31,7 +38,11 @@
         Reinstate,
 
         /// <summary>
+<<<<<<< HEAD
         /// Transfer.
+=======
+        /// Transfer
+>>>>>>> 7ba2462... StyleCop fixes.
         /// </summary>
         Transfer,
     }

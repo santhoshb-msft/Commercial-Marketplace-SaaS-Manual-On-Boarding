@@ -11,27 +11,31 @@ namespace CommandCenter.Controllers
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Marketplace.SaaS;
-    using Microsoft.Marketplace.SaaS.Models;
 
     /// <summary>
-    /// Only an admin can call this from an email.
+    /// Manage mail links.
     /// </summary>
     [Authorize("CommandCenterAdmin")]
     public class MailLinkController : Controller
     {
         private readonly IMarketplaceProcessor marketplaceProcessor;
-        private readonly IMarketplaceClient marketplaceClient;
+        private readonly IMarketplaceSaaSClient marketplaceClient;
 
-        public MailLinkController(IMarketplaceProcessor marketplaceProcessor, IMarketplaceClient marketplaceClient)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MailLinkController"/> class.
+        /// </summary>
+        /// <param name="marketplaceProcessor">marketplaceProcessor.</param>
+        /// <param name="marketplaceClient">Marketplace API client.</param>
+        public MailLinkController(IMarketplaceProcessor marketplaceProcessor, IMarketplaceSaaSClient marketplaceClient)
         {
             this.marketplaceProcessor = marketplaceProcessor;
             this.marketplaceClient = marketplaceClient;
         }
 
         /// <summary>
-        /// Send an activate for the subscription.
+        /// Activate link.
         /// </summary>
-        /// <param name="notificationModel">Notification details.</param>
+        /// <param name="notificationModel">Details on the URL.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Action result.</returns>
         [HttpGet]
@@ -39,7 +43,12 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await this.marketplaceProcessor.ActivateSubscriptionAsync(notificationModel.SubscriptionId, notificationModel.PlanId, cancellationToken);
+            if (notificationModel == null)
+            {
+                throw new ArgumentNullException(nameof(notificationModel));
+            }
+
+            await this.marketplaceProcessor.ActivateSubscriptionAsync(notificationModel.SubscriptionId, notificationModel.PlanId, cancellationToken).ConfigureAwait(false);
 
             return this.View(
                 new ActivateActionViewModel
@@ -49,9 +58,9 @@ namespace CommandCenter.Controllers
         }
 
         /// <summary>
-        /// Acknowledge quantity change.
+        /// Quantity change link.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="notificationModel">Details on the URL.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Action result.</returns>
         [HttpGet]
@@ -59,17 +68,20 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await OperationAckAsync(notificationModel, cancellationToken);
+            if (notificationModel == null)
+            {
+                throw new ArgumentNullException(nameof(notificationModel));
+            }
 
-            await this.UpdateOperationAsync(notificationModel, cancellationToken).ConfigureAwait(false);
+            await this.OperationAckAsync(notificationModel, cancellationToken).ConfigureAwait(false);
 
             return this.View("OperationUpdate", notificationModel);
         }
 
         /// <summary>
-        /// Acknowledge reinstate.
+        /// Reinstate link.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="notificationModel">Details on the URL.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Action result.</returns>
         [HttpGet]
@@ -77,15 +89,20 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await OperationAckAsync(notificationModel, cancellationToken);
+            if (notificationModel == null)
+            {
+                throw new ArgumentNullException(nameof(notificationModel));
+            }
+
+            await this.OperationAckAsync(notificationModel, cancellationToken).ConfigureAwait(false);
 
             return this.View("OperationUpdate", notificationModel);
         }
 
         /// <summary>
-        /// Acknowledge suspend.
+        /// Suspend link.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="notificationModel">Details on the URL.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Action result.</returns>
         [HttpGet]
@@ -93,17 +110,20 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await OperationAckAsync(notificationModel, cancellationToken);
+            if (notificationModel == null)
+            {
+                throw new ArgumentNullException(nameof(notificationModel));
+            }
 
-            await this.UpdateOperationAsync(notificationModel, cancellationToken).ConfigureAwait(false);
+            await this.OperationAckAsync(notificationModel, cancellationToken).ConfigureAwait(false);
 
             return this.View("OperationUpdate", notificationModel);
         }
 
         /// <summary>
-        /// Acknowledge unsubscribe. This is not really necessariy as protocol states, but adding here to point out it is not necessary.
+        /// Unsubscribe link.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="notificationModel">Details on the URL.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Action result.</returns>
         [HttpGet]
@@ -111,15 +131,20 @@ namespace CommandCenter.Controllers
             NotificationModel notificationModel,
             CancellationToken cancellationToken)
         {
-            await OperationAckAsync(notificationModel, cancellationToken);
+            if (notificationModel == null)
+            {
+                throw new ArgumentNullException(nameof(notificationModel));
+            }
+
+            await this.OperationAckAsync(notificationModel, cancellationToken).ConfigureAwait(false);
 
             return this.View("OperationUpdate", notificationModel);
         }
 
         /// <summary>
-        /// Update request..
+        /// Update link.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="notificationModel">Details on the URL.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Action result.</returns>
         [HttpGet]
@@ -149,7 +174,7 @@ namespace CommandCenter.Controllers
             NotificationModel payload,
             CancellationToken cancellationToken)
         {
-            await this.marketplaceProcessor.OperationAckAsync(payload.SubscriptionId, payload.OperationId, payload.PlanId, payload.Quantity, cancellationToken);
+            await this.marketplaceProcessor.OperationAckAsync(payload.SubscriptionId, payload.OperationId, payload.PlanId, payload.Quantity, cancellationToken).ConfigureAwait(false);
         }
     }
 }

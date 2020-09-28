@@ -8,26 +8,32 @@ namespace CommandCenter.Marketplace
     using CommandCenter.Models;
 
     /// <summary>
-    /// Notification handler interface.
+    ///  Notification helper interface.
     /// </summary>
     public interface IMarketplaceNotificationHandler
     {
         /// <summary>
-        /// Send email for plan change notification.
+        /// Notify about change plan.
         /// </summary>
-        /// <param name="notificationModel">Received notification.</param>
+        /// <param name="notificationModel">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
         Task NotifyChangePlanAsync(NotificationModel notificationModel, CancellationToken cancellationToken = default);
 
+        /// <summary>
+        /// Notify about new subscription.
+        /// </summary>
+        /// <param name="provisionModel">provisionModel model.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Void.</returns>
         Task ProcessNewSubscriptionAsyc(
             AzureSubscriptionProvisionModel provisionModel,
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Send email for change plan notification.
+        /// Notify about new plan change.
         /// </summary>
-        /// <param name="provisionModel">Details.</param>
+        /// <param name="provisionModel">provisionModel model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
         Task ProcessChangePlanAsync(
@@ -35,9 +41,9 @@ namespace CommandCenter.Marketplace
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Send email for quantity change.
+        /// Notify about change quantity.
         /// </summary>
-        /// <param name="notificationModel">Details.</param>
+        /// <param name="notificationModel">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
         Task ProcessChangeQuantityAsync(
@@ -45,9 +51,9 @@ namespace CommandCenter.Marketplace
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Handle fail of conflict operations.
+        /// Notify about conflict.
         /// </summary>
-        /// <param name="notificationModel">Received notification.</param>
+        /// <param name="notificationModel">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
         Task ProcessOperationFailOrConflictAsync(
@@ -55,25 +61,25 @@ namespace CommandCenter.Marketplace
             CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Send reinstated email.
+        /// Notify about reinstate.
         /// </summary>
-        /// <param name="notificationModel">Received notification.</param>
+        /// <param name="notificationModel">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
         Task ProcessReinstatedAsync(NotificationModel notificationModel, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Send suspended email.
+        /// Notify about suspend.
         /// </summary>
-        /// <param name="notificationModel">Received notification.</param>
+        /// <param name="notificationModel">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
         Task ProcessSuspendedAsync(NotificationModel notificationModel, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Send unsubscribed email.
+        /// Notify about unsbscribe.
         /// </summary>
-        /// <param name="notificationModel">Received notification.</param>
+        /// <param name="notificationModel">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
         Task ProcessUnsubscribedAsync(

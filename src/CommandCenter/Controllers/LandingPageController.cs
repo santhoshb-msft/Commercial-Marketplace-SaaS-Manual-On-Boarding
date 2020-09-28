@@ -27,23 +27,29 @@ namespace CommandCenter.Controllers
         private readonly ILogger<LandingPageController> logger;
         private readonly IMarketplaceProcessor marketplaceProcessor;
         private readonly IMarketplaceNotificationHandler notificationHandler;
-        private readonly IMarketplaceClient marketplaceClient;
+        private readonly IMarketplaceSaaSClient marketplaceClient;
         private readonly CommandCenterOptions options;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LandingPageController"/> class.
         /// </summary>
         /// <param name="commandCenterOptions">Options.</param>
-        /// <param name="marketplaceClient">Marketplace API client.</param>
+        /// <param name="marketplaceProcessor">Marketplace processor.</param>
         /// <param name="notificationHandler">Notification handler.</param>
+        /// <param name="marketplaceClient">Marketplace client.</param>
         /// <param name="logger">Logger.</param>
         public LandingPageController(
             IOptionsMonitor<CommandCenterOptions> commandCenterOptions,
             IMarketplaceProcessor marketplaceProcessor,
             IMarketplaceNotificationHandler notificationHandler,
-            IMarketplaceClient marketplaceClient,
+            IMarketplaceSaaSClient marketplaceClient,
             ILogger<LandingPageController> logger)
         {
+            if (commandCenterOptions == null)
+            {
+                throw new ArgumentNullException(nameof(commandCenterOptions));
+            }
+
             this.marketplaceProcessor = marketplaceProcessor;
             this.notificationHandler = notificationHandler;
             this.marketplaceClient = marketplaceClient;
@@ -51,7 +57,12 @@ namespace CommandCenter.Controllers
             this.options = commandCenterOptions.CurrentValue;
         }
 
-        // GET: LandingPage
+        /// <summary>
+        /// Landing page get.
+        /// </summary>
+        /// <param name="token">Marketplace purchase identification token.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Action result.</returns>
         public async Task<ActionResult> Index(string token, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(token))
@@ -61,10 +72,13 @@ namespace CommandCenter.Controllers
             }
 
             // Get the subscription for the offer from the marketplace purchase identification token
-            var resolvedSubscription = await this.marketplaceProcessor.GetSubscriptionFromPurchaseIdentificationTokenAsync(token, cancellationToken);
+            var resolvedSubscription = await this.marketplaceProcessor.GetSubscriptionFromPurchaseIdentificationTokenAsync(token, cancellationToken).ConfigureAwait(false);
 
             // Rest is implementation detail. In this sample, we chose allow the subscriber to change the plan for an activated subscriptio
-            if (resolvedSubscription == default(ResolvedSubscription)) return default;
+            if (resolvedSubscription == default(ResolvedSubscription))
+            {
+                return default;
+            }
 
             var existingSubscription = resolvedSubscription.Subscription;
 
@@ -99,42 +113,61 @@ namespace CommandCenter.Controllers
 
             if (provisioningModel != default)
             {
-                provisioningModel.FullName = (User.Identity as ClaimsIdentity)?.FindFirst("name")?.Value;
-                provisioningModel.Email = User.Identity.GetUserEmail();
-                provisioningModel.BusinessUnitContactEmail = User.Identity.GetUserEmail();
+                provisioningModel.FullName = (this.User.Identity as ClaimsIdentity)?.FindFirst("name")?.Value;
+                provisioningModel.Email = this.User.Identity.GetUserEmail();
+                provisioningModel.BusinessUnitContactEmail = this.User.Identity.GetUserEmail();
 
-                return View(provisioningModel);
+                return this.View(provisioningModel);
             }
 
-            ModelState.AddModelError(string.Empty, "Cannot resolve subscription");
-            return View();
+            this.ModelState.AddModelError(string.Empty, "Cannot resolve subscription");
+            return this.View();
         }
 
+        /// <summary>
+        /// Landing page post handler.
+        /// </summary>
+        /// <param name="provisionModel">View model.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <returns>Action result.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Index(AzureSubscriptionProvisionModel provisionModel, CancellationToken cancellationToken)
         {
-            var urlBase = $"{Request.Scheme}://{Request.Host}";
-            options.BaseUrl = urlBase;
+            if (provisionModel == null)
+            {
+                throw new ArgumentNullException(nameof(provisionModel));
+            }
+
+            var urlBase = $"{this.Request.Scheme}://{this.Request.Host}";
+            this.options.BaseUrl = new Uri(urlBase);
             try
             {
                 // A new subscription will have PendingFulfillmentStart as status
                 if (provisionModel.SubscriptionStatus == SubscriptionStatusEnum.PendingFulfillmentStart)
-                    await notificationHandler.ProcessNewSubscriptionAsyc(provisionModel, cancellationToken);
+                {
+                    await this.notificationHandler.ProcessNewSubscriptionAsyc(provisionModel, cancellationToken).ConfigureAwait(false);
+                }
                 else
-                    await notificationHandler.ProcessChangePlanAsync(provisionModel, cancellationToken);
+                {
+                    await this.notificationHandler.ProcessChangePlanAsync(provisionModel, cancellationToken).ConfigureAwait(false);
+                }
 
-                return RedirectToAction(nameof(Success));
+                return this.RedirectToAction(nameof(this.Success));
             }
             catch (Exception ex)
             {
-                return BadRequest(ex);
+                return this.BadRequest(ex);
             }
         }
 
+        /// <summary>
+        /// Success.
+        /// </summary>
+        /// <returns>Action result.</returns>
         public ActionResult Success()
         {
-            return View();
+            return this.View();
         }
     }
 }

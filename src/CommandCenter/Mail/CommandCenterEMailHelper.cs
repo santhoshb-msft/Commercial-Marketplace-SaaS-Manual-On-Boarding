@@ -19,7 +19,7 @@ namespace CommandCenter.Mail
     using SendGrid.Helpers.Mail;
 
     /// <summary>
-    /// Helper to send emails.
+    /// Helper for email messages.
     /// </summary>
     public class CommandCenterEMailHelper : IMarketplaceNotificationHandler
     {
@@ -32,7 +32,7 @@ namespace CommandCenter.Mail
         /// <summary>
         /// Initializes a new instance of the <see cref="CommandCenterEMailHelper"/> class.
         /// </summary>
-        /// <param name="optionsMonitor">Helper for sending emails.</param>
+        /// <param name="optionsMonitor">Options monitor.</param>
         /// <param name="marketplaceClient">Marketplace API client.</param>
         public CommandCenterEMailHelper(
             IOptionsMonitor<CommandCenterOptions> optionsMonitor,
@@ -65,6 +65,7 @@ namespace CommandCenter.Mail
                 cancellationToken).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         public async Task ProcessNewSubscriptionAsyc(
             AzureSubscriptionProvisionModel provisionModel,
             CancellationToken cancellationToken = default)
@@ -243,10 +244,8 @@ namespace CommandCenter.Mail
             string innerText,
             string controllerName = MailLinkControllerName)
         {
-            if (Uri.TryCreate(this.options.BaseUrl.ToString(), UriKind.Absolute, out var baseUrl))
-            {
-                var uriStart = FluentUriBuilder.Start(baseUrl).AddPath(controllerName)
-                    .AddPath(controllerAction);
+            var uriStart = FluentUriBuilder.Start(this.options.BaseUrl).AddPath(controllerName)
+                .AddPath(controllerAction);
 
                 foreach (var (item1, item2) in queryParams) uriStart.AddQuery(item1, item2);
 
@@ -254,9 +253,6 @@ namespace CommandCenter.Mail
 
                 return $"<a href=\"{href}\">{innerText}</a>";
             }
-
-            return "<a href=\"\"></a>";
-        }
 
         private async Task SendEmailAsync(
             Func<string> subjectBuilder,
@@ -268,10 +264,14 @@ namespace CommandCenter.Mail
             msg.SetFrom(new EmailAddress(this.options.Mail.FromEmail, "Marketplace command center"));
 
 <<<<<<< HEAD
+<<<<<<< HEAD
             var recipients = new List<EmailAddress> { new EmailAddress(this.options.Mail.OperationsTeamEmail) };
 =======
             var recipients = new List<EmailAddress> { new EmailAddress(options.Mail.OperationsTeamEmail) };
 >>>>>>> afebf60... Removed legacy SDK client, added generated SDK
+=======
+            var recipients = new List<EmailAddress> { new EmailAddress(this.options.Mail.OperationsTeamEmail) };
+>>>>>>> 7ba2462... StyleCop fixes.
 
             msg.AddTos(recipients);
 
