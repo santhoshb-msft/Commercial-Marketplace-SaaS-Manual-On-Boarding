@@ -1,19 +1,33 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Marketplace;
-using Newtonsoft.Json;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace CommandCenter.Webhook
 {
+    using System;
+    using System.ComponentModel;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Marketplace.SaaS;
+    using Newtonsoft.Json;
+
+    /// <summary>
+    /// Webhook processor.
+    /// </summary>
     public class WebhookProcessor : IWebhookProcessor
     {
         private readonly ILogger<WebhookProcessor> logger;
-        private readonly IMarketplaceClient marketplaceClient;
+        private readonly IMarketplaceSaaSClient marketplaceClient;
         private readonly IWebhookHandler webhookHandler;
 
-        public WebhookProcessor(IMarketplaceClient marketplaceClient,
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebhookProcessor"/> class.
+        /// </summary>
+        /// <param name="marketplaceClient">Marketplace API client.</param>
+        /// <param name="webhookHandler">Webhook handler.</param>
+        /// <param name="logger">Logger.</param>
+        public WebhookProcessor(
+            IMarketplaceSaaSClient marketplaceClient,
             IWebhookHandler webhookHandler,
             ILogger<WebhookProcessor> logger)
         {
@@ -22,20 +36,27 @@ namespace CommandCenter.Webhook
             this.webhookHandler = webhookHandler;
         }
 
-        public async Task ProcessWebhookNotificationAsync(WebhookPayload payload,
+        /// <inheritdoc/>
+        public async Task ProcessWebhookNotificationAsync(
+            WebhookPayload payload,
             CancellationToken cancellationToken = default)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             // Always query the fulfillment API for the received Operation for security reasons. Webhook endpoint is not authenticated.
-            var operationDetails = await marketplaceClient.SubscriptionOperations.GetOperationStatusAsync(
+            var operationDetails = await this.marketplaceClient.SubscriptionOperations.GetOperationStatusAsync(
                 payload.SubscriptionId,
                 payload.OperationId,
                 null,
                 null,
-                cancellationToken);
+                cancellationToken).ConfigureAwait(false);
 
             if (operationDetails == null)
             {
-                logger.LogError(
+                this.logger.LogError(
                     $"Operation query returned {JsonConvert.SerializeObject(operationDetails)} for subscription {payload.SubscriptionId} operation {payload.OperationId}");
                 return;
             }
@@ -43,29 +64,29 @@ namespace CommandCenter.Webhook
             switch (payload.Action)
             {
                 case WebhookAction.Unsubscribe:
-                    await webhookHandler.UnsubscribedAsync(payload);
+                    await this.webhookHandler.UnsubscribedAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.ChangePlan:
-                    await webhookHandler.ChangePlanAsync(payload);
+                    await this.webhookHandler.ChangePlanAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.ChangeQuantity:
-                    await webhookHandler.ChangeQuantityAsync(payload);
+                    await this.webhookHandler.ChangeQuantityAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.Suspend:
-                    await webhookHandler.SuspendedAsync(payload);
+                    await this.webhookHandler.SuspendedAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.Reinstate:
-                    await webhookHandler.ReinstatedAsync(payload);
+                    await this.webhookHandler.ReinstatedAsync(payload).ConfigureAwait(false);
                     break;
 
                 case WebhookAction.Transfer:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new InvalidEnumArgumentException("payload.Action");
             }
         }
     }

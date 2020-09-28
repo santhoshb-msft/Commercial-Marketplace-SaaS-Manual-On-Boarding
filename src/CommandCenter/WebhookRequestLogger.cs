@@ -1,36 +1,58 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.IO;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace CommandCenter
 {
+    using System;
+    using System.IO;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.IO;
+
+    /// <summary>
+    /// Logging webhook requests for debug purposes.
+    /// </summary>
     public class WebhookRequestLogger
     {
         private readonly RequestDelegate next;
         private readonly ILogger<WebhookRequestLogger> logger;
         private readonly RecyclableMemoryStreamManager memoryStreamManager;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WebhookRequestLogger"/> class.
+        /// </summary>
+        /// <param name="next">Next request delegate.</param>
+        /// <param name="loggerFactory">Logger factory.</param>
         public WebhookRequestLogger(RequestDelegate next, ILoggerFactory loggerFactory)
         {
             this.next = next;
-            logger = loggerFactory.CreateLogger<WebhookRequestLogger>();
-            memoryStreamManager = new RecyclableMemoryStreamManager();
+            this.logger = loggerFactory.CreateLogger<WebhookRequestLogger>();
+            this.memoryStreamManager = new RecyclableMemoryStreamManager();
         }
 
+        /// <summary>
+        /// Capture the request.
+        /// </summary>
+        /// <param name="context">Http Context.</param>
+        /// <returns>void.</returns>
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path.Value.ToLower().Contains("webhook"))
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (context.Request.Path.Value.ToUpperInvariant().Contains("WEBHOOK", StringComparison.InvariantCulture))
             {
                 context.Request.EnableBuffering();
 
-                await using var requestStreamCopy = memoryStreamManager.GetStream();
-                await context.Request.Body.CopyToAsync(requestStreamCopy);
+                await using var requestStreamCopy = this.memoryStreamManager.GetStream();
+                await context.Request.Body.CopyToAsync(requestStreamCopy).ConfigureAwait(false);
                 context.Request.Body.Position = 0;
                 context.Request.Body.Seek(0, SeekOrigin.Begin);
 
-                logger.LogInformation($"Webhook raw request {ReadStream(requestStreamCopy)}");
+                this.logger.LogInformation($"Webhook raw request {ReadStream(requestStreamCopy)}");
             }
         }
 
@@ -48,11 +70,13 @@ namespace CommandCenter
 
             do
             {
-                readChunkLength = reader.ReadBlock(readChunk,
+                readChunkLength = reader.ReadBlock(
+                    readChunk,
                     0,
                     readChunkBufferLength);
                 textWriter.Write(readChunk, 0, readChunkLength);
-            } while (readChunkLength > 0);
+            }
+            while (readChunkLength > 0);
 
             return textWriter.ToString();
         }

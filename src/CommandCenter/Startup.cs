@@ -1,40 +1,47 @@
-﻿using System;
-using System.Threading;
-using CommandCenter.Authorization;
-using CommandCenter.Mail;
-using CommandCenter.Marketplace;
-using CommandCenter.Webhook;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.AzureAD.UI;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Authorization;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Marketplace;
-using Serilog;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace CommandCenter
 {
+    using CommandCenter.Authorization;
+    using CommandCenter.Mail;
+    using CommandCenter.Marketplace;
+    using CommandCenter.OperationsStore;
+    using CommandCenter.Webhook;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc.Authorization;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Identity.Web;
+    using Microsoft.Identity.Web.UI;
+    using Microsoft.Marketplace.SaaS;
+    using Serilog;
+
+    /// <summary>
+    /// ASP.NET core startup class.
+    /// </summary>
     public class Startup
     {
         private readonly IConfiguration configuration;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Startup"/> class.
+        /// </summary>
+        /// <param name="configuration">ASP.NET core configuration.</param>
         public Startup(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// </summary>
+        /// <param name="app">Application builder.</param>
+        /// <param name="env">Web host environment.</param>
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -51,7 +58,6 @@ namespace CommandCenter
 
             // Enable following to capture the webhook request. Not enabled by default for not blocking the processing of webhook
             // app.UseMiddleware<WebhookRequestLogger>();
-
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
@@ -71,73 +77,27 @@ namespace CommandCenter
             });
         }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services">Service collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
+            services.AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd")
+            .EnableTokenAcquisitionToCallDownstreamApi(initialScopes: new string[] { "user.read" })
+            .AddInMemoryTokenCaches();
 
-            // https://docs.microsoft.com/en-us/aspnet/core/security/authentication/?view=aspnetcore-3.1
-            services.AddAuthentication(AzureADDefaults.AuthenticationScheme)
-                .AddAzureAD(options => configuration.Bind("AzureAd", options))
-                .AddJwtBearer(options =>
-                {
-                    // Webhook endpoint receives a JWT from the marketplace
-                    // When you decode the JWT you will see the following important claims
-                    //"aud": <app ID calling the marketplace API, this is on "MarketplaceClient:ClientId">,
-                    //"iss": "https://sts.windows.net/<tenant ID of the App calling the marketplace API, this is on "MarketplaceClient:TenantUd">/",
+            services.Configure<CommandCenterOptions>(this.configuration.GetSection("CommandCenter"));
 
-                    // this needs to be the Tenant ID registered on the offer technical configuration page
-                    var tenantId = configuration["MarketplaceClient:TenantId"];
-
-                    // First grab the openIdConfig for the signing keys 
-                    var stsDiscoveryEndpoint =
-                        $"https://login.microsoftonline.com/{tenantId}/v2.0/.well-known/openid-configuration";
-                    IConfigurationManager<OpenIdConnectConfiguration> configurationManager =
-                        new ConfigurationManager<OpenIdConnectConfiguration>(stsDiscoveryEndpoint,
-                            new OpenIdConnectConfigurationRetriever());
-                    var openIdConfig = configurationManager.GetConfigurationAsync(CancellationToken.None).GetAwaiter()
-                        .GetResult();
-
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ClockSkew = TimeSpan.FromMinutes(5),
-                        ValidIssuer = $"https://sts.windows.net/{tenantId}/",
-                        ValidAudience = configuration["MarketplaceClient:ClientId"], // this needs to be the App ID registered on the offer technical configuration page
-                        IssuerSigningKeys = openIdConfig.SigningKeys
-                    };
-                })
-                ;
-
-            services.Configure<CookieAuthenticationOptions>(
-                AzureADDefaults.CookieScheme,
-                options => options.AccessDeniedPath = "/Subscriptions/NotAuthorized");
-
-            services.Configure<OpenIdConnectOptions>(
-                AzureADDefaults.OpenIdScheme,
-                options =>
-                {
-                    options.Authority = options.Authority + "/v2.0/"; // Azure AD v2.0
-                    options.TokenValidationParameters.ValidateIssuer =
-                        false; // accept several tenants (here simplified)
-                });
-
-            services.Configure<CommandCenterOptions>(configuration.GetSection("CommandCenter"));
-
-            services.TryAddScoped<IMarketplaceClient>(sp =>
+            services.TryAddScoped<IMarketplaceSaaSClient>(sp =>
             {
                 var marketplaceClientOptions = new MarketplaceClientOptions();
-                configuration.GetSection(MarketplaceClientOptions.MarketplaceClient).Bind(marketplaceClientOptions);
-                return new MarketplaceClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId,
-                    marketplaceClientOptions.AppKey);
+                this.configuration.GetSection(MarketplaceClientOptions.MarketplaceClient).Bind(marketplaceClientOptions);
+                return new MarketplaceSaaSClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, clientSecret: marketplaceClientOptions.AppKey);
             });
 
             services.TryAddScoped<IOperationsStore>(sp =>
-                new AzureTableOperationsStore(configuration["CommandCenter:OperationsStoreConnectionString"]));
+                new AzureTableOperationsStore(this.configuration["CommandCenter:OperationsStoreConnectionString"]));
 
             // Hack to save the host name and port during the handling the request. Please see the WebhookController and ContosoWebhookHandler implementations
             services.AddSingleton<ContosoWebhookHandlerOptions>();
@@ -154,17 +114,20 @@ namespace CommandCenter
                     "CommandCenterAdmin",
                     policy => policy.Requirements.Add(
                         new CommandCenterAdminRequirement(
-                            configuration.GetSection("CommandCenter").Get<CommandCenterOptions>()
+                            this.configuration.GetSection("CommandCenter").Get<CommandCenterOptions>()
                                 .CommandCenterAdmin))));
 
             services.AddSingleton<IAuthorizationHandler, CommandCenterAdminHandler>();
 
-            services.AddControllers(options =>
-                {
-                    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
-                    options.Filters.Add(new AuthorizeFilter(policy));
-                }
-            ).AddNewtonsoftJson();
+            services.AddControllersWithViews(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+                options.Filters.Add(new AuthorizeFilter(policy));
+            }).AddMicrosoftIdentityUI();
+
+            services.AddRazorPages();
         }
     }
 }

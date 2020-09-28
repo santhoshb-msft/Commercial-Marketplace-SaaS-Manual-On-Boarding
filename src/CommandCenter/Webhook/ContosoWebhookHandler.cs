@@ -1,99 +1,155 @@
-﻿using System;
-using System.Threading.Tasks;
-using CommandCenter.Marketplace;
-using Microsoft.Marketplace;
-using Microsoft.Marketplace.Models;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 namespace CommandCenter.Webhook
 {
+    using System;
+    using System.Threading.Tasks;
+    using CommandCenter.Marketplace;
+    using Microsoft.Marketplace.SaaS;
+    using Microsoft.Marketplace.SaaS.Models;
+
+    /// <summary>
+    /// Webhook handler.
+    /// </summary>
     public class ContosoWebhookHandler : IWebhookHandler
     {
-        private readonly IMarketplaceClient marketplaceClient;
+        private readonly IMarketplaceSaaSClient marketplaceClient;
         private readonly IMarketplaceNotificationHandler notificationHelper;
 
-        public ContosoWebhookHandler(IMarketplaceNotificationHandler notificationHelper,
-            IMarketplaceClient marketplaceClient)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContosoWebhookHandler"/> class.
+        /// </summary>
+        /// <param name="notificationHelper">Custom handler for notifications.</param>
+        /// <param name="marketplaceClient">Marketplace client.</param>
+        public ContosoWebhookHandler(
+            IMarketplaceNotificationHandler notificationHelper,
+            IMarketplaceSaaSClient marketplaceClient)
         {
             this.notificationHelper = notificationHelper;
             this.marketplaceClient = marketplaceClient;
         }
 
+        /// <inheritdoc/>
         public async Task ChangePlanAsync(WebhookPayload payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             if (payload.Status == OperationStatusEnum.Succeeded)
             {
-                var response = await marketplaceClient.SubscriptionOperations.UpdateOperationStatusWithHttpMessagesAsync(
-                    payload.SubscriptionId, payload.OperationId, null, null, payload.PlanId,
-                    null, UpdateOperationStatusEnum.Success);
+                var response = await this.marketplaceClient.SubscriptionOperations.UpdateOperationStatusWithHttpMessagesAsync(
+                    payload.SubscriptionId,
+                    payload.OperationId,
+                    null,
+                    null,
+                    payload.PlanId,
+                    null,
+                    UpdateOperationStatusEnum.Success).ConfigureAwait(false);
 
                 // Change request is complete
                 if (response.Response.IsSuccessStatusCode)
                 {
-                    await notificationHelper.NotifyChangePlanAsync(NotificationModel.FromWebhookPayload(payload)); 
-
+                    await this.notificationHelper.NotifyChangePlanAsync(NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
                 }
-                
             }
-
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {
-                await notificationHelper.ProcessOperationFailOrConflictAsync(
-                    NotificationModel.FromWebhookPayload(payload));
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(
+                    NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
             }
         }
 
+        /// <inheritdoc/>
         public async Task ChangeQuantityAsync(WebhookPayload payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             if (payload.Status == OperationStatusEnum.Succeeded)
             {
-                var response = await marketplaceClient.SubscriptionOperations.UpdateOperationStatusWithHttpMessagesAsync(
-                    payload.SubscriptionId, payload.OperationId, null, null, null,
-                    payload.Quantity, UpdateOperationStatusEnum.Success);
+                Microsoft.Rest.Azure.AzureOperationResponse response = await this.marketplaceClient.SubscriptionOperations.UpdateOperationStatusWithHttpMessagesAsync(
+                    payload.SubscriptionId,
+                    payload.OperationId,
+                    null,
+                    null,
+                    null,
+                    payload.Quantity,
+                    UpdateOperationStatusEnum.Success).ConfigureAwait(false);
 
                 // Change request is complete
                 if (response.Response.IsSuccessStatusCode)
                 {
-                    await notificationHelper.ProcessChangeQuantityAsync(
-                        NotificationModel.FromWebhookPayload(payload));
-
+                    await this.notificationHelper.ProcessChangeQuantityAsync(
+                        NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
                 }
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-                await notificationHelper.ProcessOperationFailOrConflictAsync(
-                    NotificationModel.FromWebhookPayload(payload));
+            {
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+            }
         }
 
+        /// <inheritdoc/>
         public async Task ReinstatedAsync(WebhookPayload payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             if (payload.Status == OperationStatusEnum.Succeeded)
-                await notificationHelper.ProcessReinstatedAsync(NotificationModel.FromWebhookPayload(payload));
+            {
+                await this.notificationHelper.ProcessReinstatedAsync(NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+            }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-                await notificationHelper.ProcessOperationFailOrConflictAsync(
-                    NotificationModel.FromWebhookPayload(payload));
+            {
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(
+                    NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+            }
         }
 
+        /// <inheritdoc/>
         public async Task SuspendedAsync(WebhookPayload payload)
         {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
             if (payload.Status == OperationStatusEnum.Succeeded)
-                await notificationHelper.ProcessSuspendedAsync(NotificationModel.FromWebhookPayload(payload));
+            {
+                await this.notificationHelper.ProcessSuspendedAsync(NotificationModel.FromWebhookPayload(payload))
+                    .ConfigureAwait(false);
+            }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-                await notificationHelper.ProcessOperationFailOrConflictAsync(
-                    NotificationModel.FromWebhookPayload(payload));
+            {
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+            }
         }
 
+        /// <inheritdoc/>
         public async Task UnsubscribedAsync(WebhookPayload payload)
         {
-            if (payload.Status == OperationStatusEnum.Succeeded)
-                await notificationHelper.ProcessUnsubscribedAsync(
-                    NotificationModel.FromWebhookPayload(payload));
-            else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
-                await notificationHelper.ProcessOperationFailOrConflictAsync(
-                    NotificationModel.FromWebhookPayload(payload));
-        }
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
 
-        public Task SubscribedAsync(WebhookPayload payload)
-        {
-            throw new NotImplementedException();
+            if (payload.Status == OperationStatusEnum.Succeeded)
+            {
+                await this.notificationHelper.ProcessUnsubscribedAsync(
+                    NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+            }
+            else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
+            {
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(
+                    NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+            }
         }
     }
 }
