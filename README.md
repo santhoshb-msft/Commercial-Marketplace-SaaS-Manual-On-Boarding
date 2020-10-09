@@ -1,6 +1,5 @@
 ![.NET Core](https://github.com/Ercenk/Commercial-Marketplace-SaaS-Manual-On-Boarding/workflows/.NET%20Core/badge.svg)
 
-
 # Azure Commercial Marketplace SaaS Offers Sample - Manual on-boarding of customers
 
 <!-- 
