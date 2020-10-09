@@ -4,11 +4,7 @@
 namespace CommandCenter.Marketplace
 {
     /// <summary>
-<<<<<<< HEAD
-    /// Webhook action.
-=======
     /// Action on webhook.
->>>>>>> 7ba2462... StyleCop fixes.
     /// </summary>
     public enum WebhookAction
     {
@@ -38,11 +34,7 @@ namespace CommandCenter.Marketplace
         Reinstate,
 
         /// <summary>
-<<<<<<< HEAD
         /// Transfer.
-=======
-        /// Transfer
->>>>>>> 7ba2462... StyleCop fixes.
         /// </summary>
         Transfer,
     }

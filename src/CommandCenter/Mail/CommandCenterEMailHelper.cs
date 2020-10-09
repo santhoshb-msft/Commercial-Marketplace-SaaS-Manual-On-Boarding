@@ -247,12 +247,12 @@ namespace CommandCenter.Mail
             var uriStart = FluentUriBuilder.Start(this.options.BaseUrl).AddPath(controllerName)
                 .AddPath(controllerAction);
 
-                foreach (var (item1, item2) in queryParams) uriStart.AddQuery(item1, item2);
+            foreach (var (item1, item2) in queryParams) uriStart.AddQuery(item1, item2);
 
-                var href = uriStart.Uri.ToString();
+            var href = uriStart.Uri.ToString();
 
-                return $"<a href=\"{href}\">{innerText}</a>";
-            }
+            return $"<a href=\"{href}\">{innerText}</a>";
+        }
 
         private async Task SendEmailAsync(
             Func<string> subjectBuilder,
@@ -263,15 +263,7 @@ namespace CommandCenter.Mail
 
             msg.SetFrom(new EmailAddress(this.options.Mail.FromEmail, "Marketplace command center"));
 
-<<<<<<< HEAD
-<<<<<<< HEAD
             var recipients = new List<EmailAddress> { new EmailAddress(this.options.Mail.OperationsTeamEmail) };
-=======
-            var recipients = new List<EmailAddress> { new EmailAddress(options.Mail.OperationsTeamEmail) };
->>>>>>> afebf60... Removed legacy SDK client, added generated SDK
-=======
-            var recipients = new List<EmailAddress> { new EmailAddress(this.options.Mail.OperationsTeamEmail) };
->>>>>>> 7ba2462... StyleCop fixes.
 
             msg.AddTos(recipients);
 
