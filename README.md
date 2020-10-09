@@ -8,8 +8,8 @@ languages:
 products:
 - dotnet
 
-description: "A sample demonstrating the implementation of a manual/out-of-band on-boarding of a customer for an Azure Commercial Marketplace SaaS offer"
-urlFragment: "manual-on-boarding"
+description: 
+"A sample demonstrating the implementation of a manual/out-of-band on-boarding of a customer for an Azure Commercial Marketplace SaaS offer"
 ---
 
 # Azure Commercial Marketplace SaaS Offers Sample - Manual on-boarding of customers
