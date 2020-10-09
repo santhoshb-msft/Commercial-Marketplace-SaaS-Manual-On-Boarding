@@ -4,8 +4,10 @@
 page_type: sample
 languages:
 - csharp
+
 products:
 - dotnet
+
 description: "A sample demonstrating the implementation of a manual/out-of-band on-boarding of a customer for an Azure Commercial Marketplace SaaS offer"
 urlFragment: "manual-on-boarding"
 ---
