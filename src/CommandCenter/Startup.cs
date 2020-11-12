@@ -93,7 +93,7 @@ namespace CommandCenter
             {
                 var marketplaceClientOptions = new MarketplaceClientOptions();
                 this.configuration.GetSection(MarketplaceClientOptions.MarketplaceClient).Bind(marketplaceClientOptions);
-                return new MarketplaceSaaSClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, clientSecret: marketplaceClientOptions.AppKey);
+                return new MarketplaceSaaSClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, clientSecret: marketplaceClientOptions.ClientSecret);
             });
 
             services.TryAddScoped<IOperationsStore>(sp =>

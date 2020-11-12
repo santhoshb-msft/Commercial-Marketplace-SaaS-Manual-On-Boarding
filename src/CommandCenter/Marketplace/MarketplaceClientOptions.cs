@@ -28,6 +28,6 @@ namespace CommandCenter.Marketplace
         /// <summary>
         /// Gets or sets client secret for the app registration.
         /// </summary>
-        public string AppKey { get; set; }
+        public string ClientSecret { get; set; }
     }
 }
