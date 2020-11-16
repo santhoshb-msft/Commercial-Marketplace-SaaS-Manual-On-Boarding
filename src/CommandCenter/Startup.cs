@@ -8,9 +8,12 @@ namespace CommandCenter
     using CommandCenter.Marketplace;
     using CommandCenter.OperationsStore;
     using CommandCenter.Webhook;
+    using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc.Authorization;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -56,14 +59,16 @@ namespace CommandCenter
                 app.UseHsts();
             }
 
-            // Enable following to capture the webhook request. Not enabled by default for not blocking the processing of webhook
-            // app.UseMiddleware<WebhookRequestLogger>();
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                Secure = CookieSecurePolicy.None, // if in debug mode
+                MinimumSameSitePolicy = SameSiteMode.Unspecified,
+            });
             app.UseAuthentication();
 
             app.UseRouting();
@@ -83,9 +88,13 @@ namespace CommandCenter
         /// <param name="services">Service collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd")
-            .EnableTokenAcquisitionToCallDownstreamApi(initialScopes: new string[] { "user.read" })
-            .AddInMemoryTokenCaches();
+            services.AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd");
+
+            services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options => {
+                options.AccessDeniedPath = new PathString("/MicrosoftIdentity/Account/AccessDenied");
+            });
+
+            services.AddDistributedMemoryCache();
 
             services.Configure<CommandCenterOptions>(this.configuration.GetSection("CommandCenter"));
 
@@ -125,9 +134,10 @@ namespace CommandCenter
                     .RequireAuthenticatedUser()
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
-            }).AddMicrosoftIdentityUI();
+            });
 
-            services.AddRazorPages();
+            services.AddRazorPages()
+                 .AddMicrosoftIdentityUI();
         }
     }
 }
