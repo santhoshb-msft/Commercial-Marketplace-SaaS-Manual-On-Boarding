@@ -273,6 +273,11 @@ namespace CommandCenter.Mail
 
             var client = new SendGridClient(this.options.Mail.ApiKey);
             var response = await client.SendEmailAsync(msg, cancellationToken).ConfigureAwait(false);
+
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new ApplicationException(await response.Body.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
+            }
         }
 
         private async Task SendWebhookNotificationEmailAsync(

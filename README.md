@@ -387,8 +387,7 @@ You will need to modify the settings with the values for the services you have
 created above.
 
 You will need to replace the values marked as `CHANGE`, either by editing the
-`appconfig.json` file in the solution, or by using `dotnet user-secrets` (see
-notes at the bottom of this document for more instruction).
+`appconfig.json` file in the solution, or by using `dotnet user-secrets` if you are planning share your work publicly.
 
 | Setting                                           | Change/Keep | Notes                                                                                                                                                                                                         |
 | ------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -398,7 +397,6 @@ notes at the bottom of this document for more instruction).
 | AzureAd:ClientId                                  | Change      | Copy the clientId of the multi-tenant app from its "Overview" page                                                                                                                                            |
 | AzureAd:CallbackPath                              | Keep        | Default oidc sign in path                                                                                                                                                                                     |
 | AzureAd:SignedOutCallbackPath                     | Keep        | Default sign out path                                                                                                                                                                                         |
-| AzureAd:ClientSecret                              | Change      | Used by MSAL middleware extension.                                                                                                                                                                            |
 | FulfillmentClient:AzureActiveDirectory:ClientId   | Change      | Copy the clientId of the single-tenant app from its "Overview" page. This AD app is for calling the Fulfillment API                                                                                           |
 | FulfillmentClient:AzureActiveDirectory:TenantId   | Change      | Copy the tenantId of the single-tenant app from its "Overview" page.                                                                                                                                          |
 | FulfillmentClient:AzureActiveDirectory:ClientSecret     | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                   |
