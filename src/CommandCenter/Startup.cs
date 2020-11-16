@@ -59,8 +59,6 @@ namespace CommandCenter
                 app.UseHsts();
             }
 
-            // Enable following to capture the webhook request. Not enabled by default for not blocking the processing of webhook
-            // app.UseMiddleware<WebhookRequestLogger>();
             app.UseSerilogRequestLogging();
 
             app.UseHttpsRedirection();
