@@ -15,8 +15,9 @@ namespace CommandCenter.OperationsStore
     /// </summary>
     public class AzureTableOperationsStore : IOperationsStore
     {
-        private const string TableName = "maerketplaceoperations";
+        private const string TableName = "marketplaceoperations";
         private readonly CloudTableClient tableClient;
+        private bool tableInitialized = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureTableOperationsStore"/> class.
@@ -66,13 +67,25 @@ namespace CommandCenter.OperationsStore
             CancellationToken cancellationToken = default)
         {
             var table = this.tableClient.GetTableReference(TableName);
-            await table.CreateIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
+
+            await this.InitTable(cancellationToken).ConfigureAwait(false);
 
             var entity = new OperationRecord(subscriptionId.ToString(), operationId.ToString());
 
             var tableOperation = TableOperation.InsertOrMerge(entity);
 
             await table.ExecuteAsync(tableOperation, cancellationToken).ConfigureAwait(false);
+        }
+
+        private async Task InitTable(CancellationToken cancellationToken = default)
+        {
+            if (!this.tableInitialized)
+            {
+                var table = this.tableClient.GetTableReference(TableName);
+
+                await table.CreateIfNotExistsAsync(cancellationToken).ConfigureAwait(false);
+                this.tableInitialized = true;
+            }
         }
     }
 }

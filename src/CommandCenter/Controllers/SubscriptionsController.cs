@@ -79,17 +79,16 @@ namespace CommandCenter.Controllers
 
             var newViewModel = new List<SubscriptionViewModel>();
 
+            var taskList = new List<Task<SubscriptionViewModel>>();
+
             foreach (var subscription in subscriptionsViewModel)
             {
-                var recordedSubscriptionOperations =
-                    await this.operationsStore.GetAllSubscriptionRecordsAsync(
-                        subscription.SubscriptionId,
-                        cancellationToken).ConfigureAwait(false);
+                taskList.Add(this.GetSubscriptionDetails(subscription, cancellationToken));
+            }
 
-                subscription.ExistingOperations = (await this.operationsStore.GetAllSubscriptionRecordsAsync(
-                    subscription.SubscriptionId,
-                    cancellationToken).ConfigureAwait(false)).Any();
-                subscription.OperationCount = recordedSubscriptionOperations.Count();
+            foreach (var task in taskList)
+            {
+                var subscription = await task.ConfigureAwait(false);
                 newViewModel.Add(subscription);
             }
 
@@ -246,6 +245,21 @@ namespace CommandCenter.Controllers
             await this.operationsStore.RecordAsync(model.SubscriptionId, updateResult.OperationId, cancellationToken).ConfigureAwait(false);
 
             return this.RedirectToAction("Index");
+        }
+
+        private async Task<SubscriptionViewModel> GetSubscriptionDetails(SubscriptionViewModel subscription, CancellationToken cancellationToken)
+        {
+            var recordedSubscriptionOperations =
+                    await this.operationsStore.GetAllSubscriptionRecordsAsync(
+                        subscription.SubscriptionId,
+                        cancellationToken).ConfigureAwait(false);
+
+            subscription.ExistingOperations = (await this.operationsStore.GetAllSubscriptionRecordsAsync(
+                subscription.SubscriptionId,
+                cancellationToken).ConfigureAwait(false)).Any();
+            subscription.OperationCount = recordedSubscriptionOperations.Count();
+
+            return subscription;
         }
     }
 }
