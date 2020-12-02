@@ -30,5 +30,20 @@ namespace CommandCenter
         /// Gets or sets a value indicating whether unsubcribed subscriptions are shown.
         /// </summary>
         public bool ShowUnsubscribed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the connection string for the operations store.
+        /// </summary>
+        public string OperationsStoreConnectionString { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Azure Queue notifiction options.
+        /// </summary>
+        public AzureQueueOptions AzureQueue { get; set; }
+
+        /// <summary>
+        /// Gets or sets the active notification handler.
+        /// </summary>
+        public NotificationHandlerEnum ActiveNotificationHandler { get; set; }
     }
 }

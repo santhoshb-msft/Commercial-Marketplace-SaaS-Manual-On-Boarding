@@ -11,6 +11,7 @@ namespace CommandCenter.Mail
     using System.Threading.Tasks;
     using CommandCenter.Marketplace;
     using CommandCenter.Models;
+    using CommandCenter.Utilities;
     using Microsoft.Extensions.Options;
     using Microsoft.Marketplace.SaaS;
     using Newtonsoft.Json;
@@ -49,19 +50,19 @@ namespace CommandCenter.Mail
 
         /// <inheritdoc/>
         public async Task NotifyChangePlanAsync(
-            NotificationModel notificationModel,
+            WebhookPayload payload,
             CancellationToken cancellationToken = default)
         {
-            if (notificationModel == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(notificationModel));
+                throw new ArgumentNullException(nameof(payload));
             }
 
             await this.SendWebhookNotificationEmailAsync(
                 "Plan change request complete",
                 $"Plan change request complete. Please take the required action.",
                 string.Empty,
-                notificationModel,
+                payload,
                 cancellationToken).ConfigureAwait(false);
         }
 
@@ -128,32 +129,34 @@ namespace CommandCenter.Mail
         }
 
         /// <inheritdoc/>
-        public async Task ProcessChangeQuantityAsync(
-            NotificationModel notificationModel,
+        public async Task NotifyChangeQuantityAsync(
+            WebhookPayload payload,
             CancellationToken cancellationToken = default)
         {
-            if (notificationModel == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(notificationModel));
+                throw new ArgumentNullException(nameof(payload));
             }
 
             await this.SendWebhookNotificationEmailAsync(
                 "Quantity change request",
                 "Quantity change request. Please take the required action.",
                 string.Empty,
-                notificationModel,
+                payload,
                 cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
         public async Task ProcessOperationFailOrConflictAsync(
-            NotificationModel notificationModel,
+            WebhookPayload payload,
             CancellationToken cancellationToken = default)
         {
-            if (notificationModel == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(notificationModel));
+                throw new ArgumentNullException(nameof(payload));
             }
+
+            var notificationModel = NotificationModel.FromWebhookPayload(payload);
 
             var queryParams = new List<Tuple<string, string>>
             {
@@ -177,56 +180,56 @@ namespace CommandCenter.Mail
         }
 
         /// <inheritdoc/>
-        public async Task ProcessReinstatedAsync(
-            NotificationModel notificationModel,
+        public async Task NotifyReinstatedAsync(
+            WebhookPayload payload,
             CancellationToken cancellationToken = default)
         {
-            if (notificationModel == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(notificationModel));
+                throw new ArgumentNullException(nameof(payload));
             }
 
             await this.SendWebhookNotificationEmailAsync(
                 "Reinstate subscription request",
                 "Reinstate subscription request. Please take the required action, then return to this email and click the following link to confirm.",
                 "Reinstate",
-                notificationModel,
+                payload,
                 cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public async Task ProcessSuspendedAsync(
-            NotificationModel notificationModel,
+        public async Task NotifySuspendedAsync(
+            WebhookPayload payload,
             CancellationToken cancellationToken = default)
         {
-            if (notificationModel == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(notificationModel));
+                throw new ArgumentNullException(nameof(payload));
             }
 
             await this.SendWebhookNotificationEmailAsync(
                 "Suspend subscription request",
                 "Suspend subscription request. Please take the required action.",
                 string.Empty,
-                notificationModel,
+                payload,
                 cancellationToken).ConfigureAwait(false);
         }
 
         /// <inheritdoc/>
-        public async Task ProcessUnsubscribedAsync(
-            NotificationModel notificationModel,
+        public async Task NotifyUnsubscribedAsync(
+            WebhookPayload payload,
             CancellationToken cancellationToken = default)
         {
-            if (notificationModel == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(notificationModel));
+                throw new ArgumentNullException(nameof(payload));
             }
 
             await this.SendWebhookNotificationEmailAsync(
                 "Cancel subscription request",
                 "Cancel subscription request. Please take the required action.",
                 string.Empty,
-                notificationModel,
+                payload,
                 cancellationToken).ConfigureAwait(false);
         }
 
@@ -284,25 +287,36 @@ namespace CommandCenter.Mail
             string subject,
             string mailBody,
             string actionName,
-            NotificationModel notificationModel,
+            WebhookPayload payload,
             CancellationToken cancellationToken)
         {
-            if (notificationModel == null)
+            if (payload == null)
             {
-                throw new ArgumentNullException(nameof(notificationModel));
+                throw new ArgumentNullException(nameof(payload));
             }
 
-            var queryParams = new List<Tuple<string, string>>
+            var notificationModel = NotificationModel.FromWebhookPayload(payload);
+
+            if (string.IsNullOrEmpty(actionName))
             {
-                new Tuple<string, string>(
-                    "subscriptionId",
-                    notificationModel.SubscriptionId.ToString()),
-                new Tuple<string, string>("publisherId", notificationModel.PublisherId),
-                new Tuple<string, string>("offerId", notificationModel.OfferId),
-                new Tuple<string, string>("planId", notificationModel.PlanId),
-                new Tuple<string, string>("quantity", notificationModel.Quantity.ToString(CultureInfo.InvariantCulture)),
-                new Tuple<string, string>("operationId", notificationModel.OperationId.ToString()),
-            };
+                var queryParams = new List<Tuple<string, string>>
+                {
+                    new Tuple<string, string>(
+                        "subscriptionId",
+                        notificationModel.SubscriptionId.ToString()),
+                    new Tuple<string, string>("publisherId", notificationModel.PublisherId),
+                    new Tuple<string, string>("offerId", notificationModel.OfferId),
+                    new Tuple<string, string>("planId", notificationModel.PlanId),
+                    new Tuple<string, string>("quantity", notificationModel.Quantity.ToString(CultureInfo.InvariantCulture)),
+                    new Tuple<string, string>("operationId", notificationModel.OperationId.ToString()),
+                };
+
+                var actionLink = !string.IsNullOrEmpty(actionName)
+                    ? this.BuildALink(actionName, queryParams, "Click here to confirm.")
+                    : string.Empty;
+
+                mailBody = $"{mailBody}" + $"{actionLink}";
+            }
 
             var subscriptionDetails = await this.marketplaceClient.FulfillmentOperations.GetSubscriptionAsync(
                 notificationModel.SubscriptionId,
@@ -310,13 +324,9 @@ namespace CommandCenter.Mail
                 Guid.Empty,
                 cancellationToken).ConfigureAwait(false);
 
-            var actionLink = !string.IsNullOrEmpty(actionName)
-                ? this.BuildALink(actionName, queryParams, "Click here to confirm.")
-                : string.Empty;
-
             await this.SendEmailAsync(
                 () => $"{subject}, {subscriptionDetails.Name}",
-                () => $"<p>{mailBody}" + $"{actionLink}</p>"
+                () => $"<p>{mailBody}</p>"
                                        + $"<br/><div> Details are {BuildTable(JObject.Parse(JsonConvert.SerializeObject(subscriptionDetails)))}</div>",
                 cancellationToken).ConfigureAwait(false);
         }

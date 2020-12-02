@@ -71,5 +71,23 @@ namespace CommandCenter.Marketplace
         /// </summary>
         [JsonProperty("status")]
         public OperationStatusEnum Status { get; set; }
+
+        /// <summary>
+        /// Gets or sets operationRequestSource.
+        /// </summary>
+        [JsonProperty("operationRequestSource")]
+        public string OperationRequestSource { get; set; }
+
+        /// <summary>
+        /// Gets or sets subscription.
+        /// </summary>
+        [JsonProperty("subscription")]
+        public Subscription Subscription { get; set; }
+
+        /// <summary>
+        /// Gets or sets purchaseToken.
+        /// </summary>
+        [JsonProperty("purchaseToken")]
+        public string PurchaseToken { get; set; }
     }
 }

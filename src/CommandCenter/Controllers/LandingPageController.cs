@@ -11,6 +11,7 @@ namespace CommandCenter.Controllers
     using CommandCenter.Authorization;
     using CommandCenter.Marketplace;
     using CommandCenter.Models;
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ namespace CommandCenter.Controllers
     /// <summary>
     /// Landing page.
     /// </summary>
-    [Authorize]
+    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
     public class LandingPageController : Controller
     {
         private readonly ILogger<LandingPageController> logger;

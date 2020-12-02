@@ -4,6 +4,8 @@
 namespace CommandCenter.Controllers
 {
     using System;
+    using System.IO;
+    using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
     using CommandCenter.Marketplace;
@@ -19,6 +21,8 @@ namespace CommandCenter.Controllers
     /// </summary>
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [RequireHttps]
+    [Route("api/[controller]")]
+    [ApiController]
 
     // [AllowAnonymous]
     public class WebHookController : Controller
@@ -50,18 +54,20 @@ namespace CommandCenter.Controllers
         }
 
         /// <summary>
-        /// Webhook post.
+        /// Webhook endpoint.
         /// </summary>
-        /// <param name="payload">Payload.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Action result.</returns>
+        /// <returns>Http OK.</returns>
         [HttpPost]
-        public async Task<IActionResult> Index([FromBody] WebhookPayload payload, CancellationToken cancellationToken)
+        public async Task<IActionResult> Post()
         {
-            // Options is injected as a singleton. This is not a good hack, but need to pass the host name and port
-            this.logger.LogInformation($"Received webhook request: {JsonConvert.SerializeObject(payload)}");
+            var payload = string.Empty;
+            using (var reader = new StreamReader(this.Request.Body, Encoding.UTF8))
+            {
+                payload = await reader.ReadToEndAsync().ConfigureAwait(false);
+                this.logger.LogInformation($"{payload}");
+            }
 
-            await this.marketplaceProcessor.ProcessWebhookNotificationAsync(payload, cancellationToken).ConfigureAwait(false);
+            await this.marketplaceProcessor.ProcessWebhookNotificationAsync(JsonConvert.DeserializeObject<WebhookPayload>(payload), CancellationToken.None).ConfigureAwait(false);
 
             return this.Ok();
         }

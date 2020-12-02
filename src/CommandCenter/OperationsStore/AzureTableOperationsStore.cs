@@ -17,7 +17,7 @@ namespace CommandCenter.OperationsStore
     {
         private const string TableName = "marketplaceoperations";
         private readonly CloudTableClient tableClient;
-        private bool tableInitialized = false;
+        private bool tableInitialized;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureTableOperationsStore"/> class.

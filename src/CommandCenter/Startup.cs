@@ -4,11 +4,13 @@
 namespace CommandCenter
 {
     using CommandCenter.Authorization;
+    using CommandCenter.AzureQueues;
     using CommandCenter.Mail;
     using CommandCenter.Marketplace;
     using CommandCenter.OperationsStore;
     using CommandCenter.Webhook;
     using Microsoft.AspNetCore.Authentication.Cookies;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Builder;
@@ -88,11 +90,26 @@ namespace CommandCenter
         /// <param name="services">Service collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            // Enable AAD sign on on the landing page.
             services.AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd");
 
-            services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options => {
-                options.AccessDeniedPath = new PathString("/MicrosoftIdentity/Account/AccessDenied");
-            });
+            // Enable JwtBerar auth for the webhook to validate the incoming token with the MarketplaceClient section, since this call will be
+            // related with our AAD App regisration details on the partner center.
+            services.AddMicrosoftIdentityWebApiAuthentication(this.configuration, "WebHookTokenParameters");
+
+            // Now configure the custom token validation logic for WebHook
+            services.Configure<JwtBearerOptions>(
+                JwtBearerDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.TokenValidationParameters.ValidAudience = this.configuration["WebHookTokenParameters:ClientId"];
+                    options.TokenValidationParameters.ValidIssuer = $"https://sts.windows.net/{this.configuration["WebHookTokenParameters:TenantId"]}/";
+                });
+
+            services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                {
+                    options.AccessDeniedPath = new PathString("/MicrosoftIdentity/Account/AccessDenied");
+                });
 
             services.AddDistributedMemoryCache();
 
@@ -114,17 +131,31 @@ namespace CommandCenter
             services.TryAddScoped<IWebhookHandler, ContosoWebhookHandler>();
             services.TryAddScoped<IMarketplaceProcessor, MarketplaceProcessor>();
 
-            // It is email in this sample, but you can plug in anything that implements the interface and communicate with an existing API.
-            // In the email case, the existing API is the SendGrid API...
-            services.TryAddScoped<IMarketplaceNotificationHandler, CommandCenterEMailHelper>();
+            var notificationHandler = this.configuration.GetSection("CommandCenter").Get<CommandCenterOptions>().ActiveNotificationHandler;
+
+            if (notificationHandler == NotificationHandlerEnum.EmailNotifications)
+            {
+                // It is email in this sample, but you can plug in anything that implements the interface and communicate with an existing API.
+                // In the email case, the existing API is the SendGrid API...
+                services.TryAddScoped<IMarketplaceNotificationHandler, CommandCenterEMailHelper>();
+            }
+            else
+            {
+                services.TryAddScoped<IMarketplaceNotificationHandler, AzureQueueNotificationHandler>();
+            }
 
             services.AddAuthorization(
                 options => options.AddPolicy(
                     "CommandCenterAdmin",
-                    policy => policy.Requirements.Add(
+                    policy =>
+                    {
+                        policy.AuthenticationSchemes.Add(OpenIdConnectDefaults.AuthenticationScheme);
+                        policy.RequireAuthenticatedUser();
+                        policy.Requirements.Add(
                         new CommandCenterAdminRequirement(
                             this.configuration.GetSection("CommandCenter").Get<CommandCenterOptions>()
-                                .CommandCenterAdmin))));
+                                .CommandCenterAdmin));
+                    }));
 
             services.AddSingleton<IAuthorizationHandler, CommandCenterAdminHandler>();
 
