@@ -10,7 +10,7 @@ Guidance on onboarding samples to docs.microsoft.com/samples: https://review.doc
 Taxonomies for products and languages: https://review.docs.microsoft.com/new-hope/information-architecture/metadata/taxonomies?branch=master
 -->
 
-Some solutions require out-of-band or manual on-boarding steps, such as validating a customer, running scripts manually for deploying resources needed for a new customer etc. This sample uses email notifications for a new customer, or any changes on the subscription status made outside of the solution code.
+Some solutions require out-of-band or manual on-boarding steps, such as validating a customer, running scripts manually for deploying resources needed for a new customer etc. This sample uses notifications for a new customer, or any changes on the subscription status made outside of the solution code.
 
 **Please note the sample uses the preview version of .NET SDK for Commercial Marketplace source (Microsoft.Marketplace project in the solution) and refers to it as a submodule. Please see [git reference for cloning a project with submodules](https://www.git-scm.com/book/en/v2/Git-Tools-Submodules#_cloning_submodules:~:text=Cloning%20a%20Project%20with%20Submodules).**
 
@@ -228,10 +228,6 @@ Please see my overview for the integration points in
 
 ![Architecture Overview and Process Flow of the Solution](./ReadmeFiles/Overview.png)
 
-- [Landing Page](https://github.com/Ercenk/ContosoAMPBasic/blob/master/src/Dashboard/Controllers/LandingPageController.cs#L27)
-- [Webhook Endpoint](https://github.com/Ercenk/ContosoAMPBasic/blob/master/src/Dashboard/Controllers/WebHookController.cs)
-- [Calling the API](https://github.com/Ercenk/ContosoAMPBasic/blob/master/src/Dashboard/Controllers/LandingPageController.cs#L19)
-
 Remember, this scenario is useful when there is a human element in the mix, for
 situations such as:
 
@@ -364,7 +360,7 @@ registering two applications:
 Follow the steps in the
 [tutorial](https://docs.microsoft.com/en-us/azure/sendgrid-dotnet-how-to-send-email),
 and grab an API Key. Set the value of the ApiKey in the configuration section,
-"Dashboard:Mail", either using the user-secrets method or in the
+"CommandCenter:Mail", either using the user-secrets method or in the
 `appconfig.json` file.
 
 ### Creating a Storage Account
