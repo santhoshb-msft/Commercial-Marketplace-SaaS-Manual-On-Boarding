@@ -27,6 +27,7 @@ namespace CommandCenter
     using Microsoft.Marketplace.SaaS;
 
     using Serilog;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// ASP.NET core startup class.
@@ -92,9 +93,6 @@ namespace CommandCenter
         /// <param name="services">Service collection.</param>
         public void ConfigureServices(IServiceCollection services)
         {
-            // Enable AAD sign on on the landing page.
-            services.AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd");
-
             // Enable JwtBerar auth for the webhook to validate the incoming token with the WebHookTokenParameters section, since this call will be
             // related with our AAD App regisration details on the partner center.
             services.AddMicrosoftIdentityWebApiAuthentication(this.configuration, "WebHookTokenParameters");
@@ -110,10 +108,22 @@ namespace CommandCenter
                     options.TokenValidationParameters.ValidIssuer = $"https://sts.windows.net/{this.configuration["WebHookTokenParameters:TenantId"]}/";
                 });
 
+            // Enable AAD sign on on the landing page.
+            services.AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd");
+            services.Configure<OpenIdConnectOptions>(options =>
+            {
+                options.Events.OnSignedOutCallbackRedirect = (context) =>
+                {
+                    context.Response.Redirect("/Subscriptions/Index");
+                    context.HandleResponse();
+
+                    return Task.CompletedTask;
+                };
+            });
+
             services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
                     options.AccessDeniedPath = new PathString("/Subscriptions/NotAuthorized");
-                    options.LogoutPath = new PathString("/Subscriptions/Index");
                 });
 
             services.AddDistributedMemoryCache();
@@ -164,13 +174,7 @@ namespace CommandCenter
 
             services.AddSingleton<IAuthorizationHandler, CommandCenterAdminHandler>();
 
-            services.AddControllersWithViews(options =>
-            {
-                var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
-                options.Filters.Add(new AuthorizeFilter(policy));
-            });
+            services.AddControllersWithViews();
 
             services.AddRazorPages()
                  .AddMicrosoftIdentityUI();
