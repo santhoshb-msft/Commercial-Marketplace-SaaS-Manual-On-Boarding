@@ -20,7 +20,7 @@ to see the experience and a brief explanation.
 
 ## Prerequisites
 
-The sample requires .NET 5.*.*, and an Azure Storage account.
+The sample requires .NET 5.\*.\*, and an Azure Storage account.
 
 ## Table of contents
 
