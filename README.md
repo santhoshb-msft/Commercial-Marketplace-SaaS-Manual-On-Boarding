@@ -384,23 +384,27 @@ You will need to replace the values marked as `CHANGE`, either by editing the
 
 | Setting                                           | Change/Keep | Notes                                                                                                                                                                                                         |
 | ------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AzureAd:Instance                                  | Keep        | The landing page is using a multi-tenant app. Keep the instance value                                                                                                                                         |
+| AzureAd:Instance                                  | Keep        | This is used by the library                                                                                                                                                                                   |
 | AzureAd:Domain                                    | Change      | You can find this value on the "Overview" page of the Active Directory you have registered your applications in. If you are not using a custom domain, it is in the format of \<tenant name\>.onmicrosoft.com |
 | AzureAd:TenantId                                  | Keep        | Common authentication endpoint, since this is a multi-tenant app                                                                                                                                              |
 | AzureAd:ClientId                                  | Change      | Copy the clientId of the multi-tenant app from its "Overview" page                                                                                                                                            |
 | AzureAd:CallbackPath                              | Keep        | Default oidc sign in path                                                                                                                                                                                     |
 | AzureAd:SignedOutCallbackPath                     | Keep        | Default sign out path                                                                                                                                                                                         |
-| FulfillmentClient:AzureActiveDirectory:ClientId   | Change      | Copy the clientId of the single-tenant app from its "Overview" page. This AD app is for calling the Fulfillment API                                                                                           |
-| FulfillmentClient:AzureActiveDirectory:TenantId   | Change      | Copy the tenantId of the single-tenant app from its "Overview" page.                                                                                                                                          |
-| FulfillmentClient:AzureActiveDirectory:ClientSecret     | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                   |
-| FulfillmentClient:FulfillmentService:BaseUri      | Keep        | The Azure Marketplace API endpoint.                                                                                                                                                                           |
-| FulfillmentClient:FulfillmentService:ApiVersion   | Change      | Change if you want to hit the production or mock API. 2018-08-31 is for production, 2018-09-15 is for mock API                                                                                                |
-| FulfillmentClient:OperationsStoreConnectionString | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [SDK documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store) |
-| Dashboard:Mail:OperationsTeamEmail                | Change      | The sample sends emails to this address.                                                                                                                                                                      |
-| Dashboard:Mail:FromEmail                          | Change      | Sendgrid requires a "from" email address when sending emails.                                                                                                                                                 |
-| Dashboard:Mail:ApiKey                             | Change      | Sendgrid API key.                                                                                                                                                                                             |
-| Dashboard:DashboardAdmin                          | Change      | Change it to the email address you are logging on to the dashboard. Only the users with the domain name of this email is authorized to use the dashboard to display the subscriptions.                        |
-| Dashboard:ShowUnsubscribed                        | Change      | Change true or false, depending on if you want to see the subscriptions that are not active.                                                                                                                  |
+| MarketplaceClient:ClientId                        | Change      | Copy the clientId of the single-tenant app from its "Overview" page. This AD app is for calling the Fulfillment API                                                                                           |
+| MarketplaceClient:TenantId                        | Change      | Copy the tenantId of the single-tenant app from its "Overview" page.                                                                                                                                          |
+| MarketplaceClient:ClientSecret                    | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                   |
+| WebHookTokenParameters:Instance                   | Keep        | This is used by the library                                                                                                                                                                                   |
+| WebHookTokenParameters:TenantId                   | Change      | Set the same value as MarketplaceClient:TenantId                                                                                                                                                              |
+| WebHookTokenParameters:ClientId                   | Change      | Set the same value as MarketplaceClient:ClientId                                                                                                                                                              |
+| CommandCenter:OperationsStoreConnectionString     | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [SDK documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store) |
+| CommandCenter:Mail:OperationsTeamEmail            | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. The sample sends emails to this address.                                                                                                 |
+| CommandCenter:Mail:FromEmail                      | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. Sendgrid requires a "from" email address when sending emails.                                                                            |
+| CommandCenter:Mail:ApiKey                         | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. Sendgrid API key.                                                                                                                        |
+| CommandCenter:CommandCenterAdmin                  | Change      | Change it to the email address you are logging on to the dashboard. Only the users with the domain name of this email is authorized to use the dashboard to display the subscriptions.                        |
+| CommandCenter:ShowUnsubscribed                    | Change      | Change true or false, depending on if you want to see the subscriptions that are not active.                                                                                                                  |
+| CommandCenter:ActiveNotificationHandler           | Change      | Active notification handler the solution uses. It can be EmailNotifications or AzureQueueNotifications.                                                                                                       |
+| CommandCenter:AzureQueue:StorageConnectionString  | Change      | Use this section if ActiveNotificationHandler is AzureQueueNotifications. Add the storage account connection string for the queue.                                                                            |
+| CommandCenter:AzureQueue:QueueName                | Change      | Use this section if ActiveNotificationHandler is AzureQueueNotifications. Name of the queue the messages will go to.                                                                                          |
 
 ### Create an Offer on Commercial Marketplace Portal in Partner Center
 
@@ -421,7 +425,7 @@ You will need the following information to complete the offer:
 - URLs from the Azure AppService web application:
   - The Base URL `/`
   - The Landing Page `/landingpage`
-  - The Webhook Endpoint `/webhook`
+  - The Webhook Endpoint `api/webhook`
   - The Privacy Policy `/privacy`
   - The Support Page `/support`
 - Storage Account Connection String
@@ -533,7 +537,7 @@ deployed in earlier steps.
    `https://{YOUR_APP_SERVICE_NAME}.azurewebsites.net/LandingPage`.
 2. **Connection Webhook:** this is the Webhook Endpoint URL that was called out
    earlier. It will be in the format of
-   `https://{YOUR_APP_SERVICE_NAME}.azurewebsites.net/webhook`.
+   `https://{YOUR_APP_SERVICE_NAME}.azurewebsites.net/api/webhook`.
 3. **Azure Active Directory Tenant ID:** the Tenant ID hosting the Single-Tenant
    Application.
 4. **Azure Active Directory Application ID:** the Application (Client) ID from

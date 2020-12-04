@@ -9,6 +9,7 @@ namespace CommandCenter
     using CommandCenter.Marketplace;
     using CommandCenter.OperationsStore;
     using CommandCenter.Webhook;
+
     using Microsoft.AspNetCore.Authentication.Cookies;
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -24,6 +25,7 @@ namespace CommandCenter
     using Microsoft.Identity.Web;
     using Microsoft.Identity.Web.UI;
     using Microsoft.Marketplace.SaaS;
+
     using Serilog;
 
     /// <summary>
@@ -93,7 +95,7 @@ namespace CommandCenter
             // Enable AAD sign on on the landing page.
             services.AddMicrosoftIdentityWebAppAuthentication(this.configuration, "AzureAd");
 
-            // Enable JwtBerar auth for the webhook to validate the incoming token with the MarketplaceClient section, since this call will be
+            // Enable JwtBerar auth for the webhook to validate the incoming token with the WebHookTokenParameters section, since this call will be
             // related with our AAD App regisration details on the partner center.
             services.AddMicrosoftIdentityWebApiAuthentication(this.configuration, "WebHookTokenParameters");
 
@@ -102,13 +104,16 @@ namespace CommandCenter
                 JwtBearerDefaults.AuthenticationScheme,
                 options =>
                 {
+                    // Need to override the ValidAudience, since the incoming token has the app ID as the aud claim. 
+                    // Library expects it to be api://<appId> format.
                     options.TokenValidationParameters.ValidAudience = this.configuration["WebHookTokenParameters:ClientId"];
                     options.TokenValidationParameters.ValidIssuer = $"https://sts.windows.net/{this.configuration["WebHookTokenParameters:TenantId"]}/";
                 });
 
             services.Configure<CookieAuthenticationOptions>(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
-                    options.AccessDeniedPath = new PathString("/MicrosoftIdentity/Account/AccessDenied");
+                    options.AccessDeniedPath = new PathString("/Subscriptions/NotAuthorized");
+                    options.LogoutPath = new PathString("/Subscriptions/Index");
                 });
 
             services.AddDistributedMemoryCache();
