@@ -133,7 +133,7 @@ provides the URL for this webhook endpoint when registering the offer for Azure
 Marketplace.
 
 > **:warning: IMPORTANT:** This endpoint is not protected. The implementation
-> should call the marketplace REST API to ensure the validity of the event.
+> should call the marketplace REST API to ensure the validity of the event. This endpoint also receives a JWT token. You can validate the token against AAD, and check the audience to make sure this call is addressed to you. Please see the startup.cs file to see the implementation.
 
 ### Marketplace REST API Interactions
 
@@ -152,7 +152,7 @@ during registering the offer for the marketplace.
 The solution is put on a whitelist so it can call the marketplace REST API with
 those details. A client must use [service-to-service access token
 request](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-oauth2-client-creds-grant-flow#service-to-service-access-token-request)
-of the client credential workflow, and with the v1 Azure AD endpoint. Use the Marketplace Fulfillment API V2.0's resource ID, '20e940b3-4c77-4b0b-9a53-9e16a1b010a7' for the resource parameter
+of the client credential workflow. Use the Marketplace Fulfillment API V2.0's resource ID, '20e940b3-4c77-4b0b-9a53-9e16a1b010a7' for the resource parameter if you are using AAD V1, and '20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default' if you are using AAD V2. 
 
 Please note the different requirements for the Azure AD interaction for the
 landing page and calling the APIs. I recommend two separate AAD applications,
@@ -162,7 +162,7 @@ proper separation of concerns when authenticating against Azure AD.
 This way, you can ask the subscriber for consent to access his/her Graph API,
 Azure Management API, or any other API that is protected by Azure AD on the
 landing page, and separate the security for accessing the marketplace API from
-this interaction as good practice.
+this interaction as good practice. The certification policy requires the use of "User.Read" for signing on the user, and [incremental consent](https://docs.microsoft.com/en-us/azure/active-directory/azuread-dev/azure-ad-endpoint-comparison#incremental-and-dynamic-consent) pattern should you need to request other permissions.
 
 ### Activating a Subscription
 
@@ -213,11 +213,13 @@ partner center requirements. The rest of the integration is done via emails.
 
 The landing page can also used for adding new fields to gather more information
 from the subscriber; for example: what is the favored region. When a subscriber
-provides the details on the landing page, the solution generates an email to the
-configured operations contact. The operations team then provisions the required
+provides the details on the landing page, the solution generates a notification to the
+configured operations contact. The sample has both the email and Azure storage queue notification implementation. The operations team then provisions the required
 resources, onboards the customer using their internal processes, and then comes
 back to the generated email and clicks on the link in the email to activate the
 subscription.
+
+
 
 Please see my overview for the integration points in
 [Integrating a Software as a Solution with Azure Marketplace](#integrating-a-software-as-a-solution-with-azure-marketplace).
@@ -269,11 +271,10 @@ situations such as:
    (having access to the Azure subscription) can be different than the end users
    of the solution.
 8. Subscriber completes the process by submitting the form on the landing page.
-   This sends an email to the operations team email address (configured in the
-   settings).
+   This sends notification using the configured notification handler. 
 9. Operations team takes the appropriate steps (qualifying, provisioning
    resources, etc.).
-10. Once complete, operation team clicks on the activate link in the email.
+10. Once complete, operation team clicks on the activate link in the message.
 11. The sample uses the SDK to activate the subscription.
 12. SDK gets an access token from Azure Active Directory (AAD).
 13. SDK calls the `activate` operation on the Fulfillment API.
@@ -281,7 +282,7 @@ situations such as:
     it, or may stop fulfilling their monetary commitment to Microsoft.
 15. The commerce engine sends a notification on the webhook at this time, to
     notify the publisher know about the situation.
-16. The sample sends an email to the operations team, notifying the team about
+16. The sample sends a notification to the operations team, notifying the team about
     the status.
 17. The operations team may de-provision the customer.
 
@@ -384,23 +385,27 @@ You will need to replace the values marked as `CHANGE`, either by editing the
 
 | Setting                                           | Change/Keep | Notes                                                                                                                                                                                                         |
 | ------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AzureAd:Instance                                  | Keep        | The landing page is using a multi-tenant app. Keep the instance value                                                                                                                                         |
+| AzureAd:Instance                                  | Keep        | This is used by the library                                                                                                                                                                                   |
 | AzureAd:Domain                                    | Change      | You can find this value on the "Overview" page of the Active Directory you have registered your applications in. If you are not using a custom domain, it is in the format of \<tenant name\>.onmicrosoft.com |
 | AzureAd:TenantId                                  | Keep        | Common authentication endpoint, since this is a multi-tenant app                                                                                                                                              |
 | AzureAd:ClientId                                  | Change      | Copy the clientId of the multi-tenant app from its "Overview" page                                                                                                                                            |
 | AzureAd:CallbackPath                              | Keep        | Default oidc sign in path                                                                                                                                                                                     |
 | AzureAd:SignedOutCallbackPath                     | Keep        | Default sign out path                                                                                                                                                                                         |
-| FulfillmentClient:AzureActiveDirectory:ClientId   | Change      | Copy the clientId of the single-tenant app from its "Overview" page. This AD app is for calling the Fulfillment API                                                                                           |
-| FulfillmentClient:AzureActiveDirectory:TenantId   | Change      | Copy the tenantId of the single-tenant app from its "Overview" page.                                                                                                                                          |
-| FulfillmentClient:AzureActiveDirectory:ClientSecret     | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                   |
-| FulfillmentClient:FulfillmentService:BaseUri      | Keep        | The Azure Marketplace API endpoint.                                                                                                                                                                           |
-| FulfillmentClient:FulfillmentService:ApiVersion   | Change      | Change if you want to hit the production or mock API. 2018-08-31 is for production, 2018-09-15 is for mock API                                                                                                |
-| FulfillmentClient:OperationsStoreConnectionString | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [SDK documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store) |
-| Dashboard:Mail:OperationsTeamEmail                | Change      | The sample sends emails to this address.                                                                                                                                                                      |
-| Dashboard:Mail:FromEmail                          | Change      | Sendgrid requires a "from" email address when sending emails.                                                                                                                                                 |
-| Dashboard:Mail:ApiKey                             | Change      | Sendgrid API key.                                                                                                                                                                                             |
-| Dashboard:DashboardAdmin                          | Change      | Change it to the email address you are logging on to the dashboard. Only the users with the domain name of this email is authorized to use the dashboard to display the subscriptions.                        |
-| Dashboard:ShowUnsubscribed                        | Change      | Change true or false, depending on if you want to see the subscriptions that are not active.                                                                                                                  |
+| MarketplaceClient:ClientId                        | Change      | Copy the clientId of the single-tenant app from its "Overview" page. This AD app is for calling the Fulfillment API                                                                                           |
+| MarketplaceClient:TenantId                        | Change      | Copy the tenantId of the single-tenant app from its "Overview" page.                                                                                                                                          |
+| MarketplaceClient:ClientSecret                    | Change      | Go to the "Certificates & secrets" page of the single-tenant app you have registered, create a new client secret, and copy the value to the clipboard, then set the value for this setting.                   |
+| WebHookTokenParameters:Instance                   | Keep        | This is used by the library                                                                                                                                                                                   |
+| WebHookTokenParameters:TenantId                   | Change      | Set the same value as MarketplaceClient:TenantId                                                                                                                                                              |
+| WebHookTokenParameters:ClientId                   | Change      | Set the same value as MarketplaceClient:ClientId                                                                                                                                                              |
+| CommandCenter:OperationsStoreConnectionString     | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [SDK documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store) |
+| CommandCenter:Mail:OperationsTeamEmail            | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. The sample sends emails to this address.                                                                                                 |
+| CommandCenter:Mail:FromEmail                      | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. Sendgrid requires a "from" email address when sending emails.                                                                            |
+| CommandCenter:Mail:ApiKey                         | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. Sendgrid API key.                                                                                                                        |
+| CommandCenter:CommandCenterAdmin                  | Change      | Change it to the email address you are logging on to the dashboard. Only the users with the domain name of this email is authorized to use the dashboard to display the subscriptions.                        |
+| CommandCenter:ShowUnsubscribed                    | Change      | Change true or false, depending on if you want to see the subscriptions that are not active.                                                                                                                  |
+| CommandCenter:ActiveNotificationHandler           | Change      | Active notification handler the solution uses. It can be EmailNotifications or AzureQueueNotifications.                                                                                                       |
+| CommandCenter:AzureQueue:StorageConnectionString  | Change      | Use this section if ActiveNotificationHandler is AzureQueueNotifications. Add the storage account connection string for the queue.                                                                            |
+| CommandCenter:AzureQueue:QueueName                | Change      | Use this section if ActiveNotificationHandler is AzureQueueNotifications. Name of the queue the messages will go to.                                                                                          |
 
 ### Create an Offer on Commercial Marketplace Portal in Partner Center
 
@@ -421,7 +426,7 @@ You will need the following information to complete the offer:
 - URLs from the Azure AppService web application:
   - The Base URL `/`
   - The Landing Page `/landingpage`
-  - The Webhook Endpoint `/webhook`
+  - The Webhook Endpoint `api/webhook`
   - The Privacy Policy `/privacy`
   - The Support Page `/support`
 - Storage Account Connection String
@@ -533,7 +538,7 @@ deployed in earlier steps.
    `https://{YOUR_APP_SERVICE_NAME}.azurewebsites.net/LandingPage`.
 2. **Connection Webhook:** this is the Webhook Endpoint URL that was called out
    earlier. It will be in the format of
-   `https://{YOUR_APP_SERVICE_NAME}.azurewebsites.net/webhook`.
+   `https://{YOUR_APP_SERVICE_NAME}.azurewebsites.net/api/webhook`.
 3. **Azure Active Directory Tenant ID:** the Tenant ID hosting the Single-Tenant
    Application.
 4. **Azure Active Directory Application ID:** the Application (Client) ID from

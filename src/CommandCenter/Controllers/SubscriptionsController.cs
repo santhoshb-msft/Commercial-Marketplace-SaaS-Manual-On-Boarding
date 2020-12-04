@@ -11,6 +11,8 @@ namespace CommandCenter.Controllers
     using System.Threading.Tasks;
     using CommandCenter.Models;
     using CommandCenter.OperationsStore;
+
+    using Microsoft.AspNetCore.Authentication.OpenIdConnect;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.Options;
@@ -21,6 +23,7 @@ namespace CommandCenter.Controllers
     /// Subscriptions panel.
     /// </summary>
     [Authorize("CommandCenterAdmin")]
+    [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
     public class SubscriptionsController : Controller
     {
         private readonly IMarketplaceSaaSClient marketplaceClient;

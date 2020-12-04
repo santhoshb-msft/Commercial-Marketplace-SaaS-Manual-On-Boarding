@@ -15,10 +15,10 @@ namespace CommandCenter.Marketplace
         /// <summary>
         /// Notify about change plan.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="payload">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
-        Task NotifyChangePlanAsync(NotificationModel notificationModel, CancellationToken cancellationToken = default);
+        Task NotifyChangePlanAsync(WebhookPayload payload, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Notify about new subscription.
@@ -43,47 +43,47 @@ namespace CommandCenter.Marketplace
         /// <summary>
         /// Notify about change quantity.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="payload">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
-        Task ProcessChangeQuantityAsync(
-            NotificationModel notificationModel,
+        Task NotifyChangeQuantityAsync(
+            WebhookPayload payload,
             CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Notify about conflict.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="payload">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
         Task ProcessOperationFailOrConflictAsync(
-            NotificationModel notificationModel,
+            WebhookPayload payload,
             CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Notify about reinstate.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="payload">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
-        Task ProcessReinstatedAsync(NotificationModel notificationModel, CancellationToken cancellationToken = default);
+        Task NotifyReinstatedAsync(WebhookPayload payload, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Notify about suspend.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="payload">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
-        Task ProcessSuspendedAsync(NotificationModel notificationModel, CancellationToken cancellationToken = default);
+        Task NotifySuspendedAsync(WebhookPayload payload, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Notify about unsbscribe.
         /// </summary>
-        /// <param name="notificationModel">Notification model.</param>
+        /// <param name="payload">Notification model.</param>
         /// <param name="cancellationToken">Cancellation token.</param>
         /// <returns>Void.</returns>
-        Task ProcessUnsubscribedAsync(
-            NotificationModel notificationModel,
+        Task NotifyUnsubscribedAsync(
+            WebhookPayload payload,
             CancellationToken cancellationToken = default);
     }
 }

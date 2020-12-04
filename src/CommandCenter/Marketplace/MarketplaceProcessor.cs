@@ -62,7 +62,10 @@ namespace CommandCenter.Marketplace
 
             var resolvedSubscription = await this.marketplaceClient.FulfillmentOperations.ResolveAsync(token, null, null, cancellationToken).ConfigureAwait(false);
 
-            this.logger.LogInformation($"Resolved subscription {resolvedSubscription.Id} with plan {resolvedSubscription.PlanId}");
+            if (resolvedSubscription != default)
+            {
+                this.logger.LogInformation($"Resolved subscription {resolvedSubscription.Id} with plan {resolvedSubscription.PlanId}");
+            }
 
             return resolvedSubscription;
         }

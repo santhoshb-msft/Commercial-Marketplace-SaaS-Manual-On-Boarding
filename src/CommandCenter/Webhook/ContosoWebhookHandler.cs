@@ -52,13 +52,12 @@ namespace CommandCenter.Webhook
                 // Change request is complete
                 if (response.Response.IsSuccessStatusCode)
                 {
-                    await this.notificationHelper.NotifyChangePlanAsync(NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                    await this.notificationHelper.NotifyChangePlanAsync(payload).ConfigureAwait(false);
                 }
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(
-                    NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
             }
         }
 
@@ -84,13 +83,12 @@ namespace CommandCenter.Webhook
                 // Change request is complete
                 if (response.Response.IsSuccessStatusCode)
                 {
-                    await this.notificationHelper.ProcessChangeQuantityAsync(
-                        NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                    await this.notificationHelper.NotifyChangeQuantityAsync(payload).ConfigureAwait(false);
                 }
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
             }
         }
 
@@ -104,12 +102,11 @@ namespace CommandCenter.Webhook
 
             if (payload.Status == OperationStatusEnum.Succeeded)
             {
-                await this.notificationHelper.ProcessReinstatedAsync(NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                await this.notificationHelper.NotifyReinstatedAsync(payload).ConfigureAwait(false);
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(
-                    NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
             }
         }
 
@@ -123,12 +120,12 @@ namespace CommandCenter.Webhook
 
             if (payload.Status == OperationStatusEnum.Succeeded)
             {
-                await this.notificationHelper.ProcessSuspendedAsync(NotificationModel.FromWebhookPayload(payload))
+                await this.notificationHelper.NotifySuspendedAsync(payload)
                     .ConfigureAwait(false);
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
             }
         }
 
@@ -142,13 +139,11 @@ namespace CommandCenter.Webhook
 
             if (payload.Status == OperationStatusEnum.Succeeded)
             {
-                await this.notificationHelper.ProcessUnsubscribedAsync(
-                    NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                await this.notificationHelper.NotifyUnsubscribedAsync(payload).ConfigureAwait(false);
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {
-                await this.notificationHelper.ProcessOperationFailOrConflictAsync(
-                    NotificationModel.FromWebhookPayload(payload)).ConfigureAwait(false);
+                await this.notificationHelper.ProcessOperationFailOrConflictAsync(payload).ConfigureAwait(false);
             }
         }
     }
