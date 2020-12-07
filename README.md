@@ -44,7 +44,7 @@ In the sections below you will find:
     - [Registering Azure Active Directory Applications](#registering-azure-active-directory-applications)
       - [Creating a New Directory](#creating-a-new-directory)
       - [Registering the Apps](#registering-the-apps)
-    - [Creating and Configuring a SendGrid Account](#creating-and-configuring-a-sendgrid-account)
+    - [Creating and Configuring a SendGrid Account when using email notifications](#creating-and-configuring-a-sendgrid-account-when-using-email-notifications)
     - [Creating a Storage Account](#creating-a-storage-account)
     - [Change the Configuration Settings](#change-the-configuration-settings)
     - [Create an Offer on Commercial Marketplace Portal in Partner Center](#create-an-offer-on-commercial-marketplace-portal-in-partner-center)
@@ -209,14 +209,14 @@ subscription by a customer.
 It exposes a landing page that can be customized for branding. It provides a
 webhook endpoint for processing the incoming notifications from the Azure
 Marketplace. It also provides a privacy policy and support page to meet the
-partner center requirements. The rest of the integration is done via emails.
+partner center requirements. The rest of the integration is done via notifications.
 
 The landing page can also used for adding new fields to gather more information
 from the subscriber; for example: what is the favored region. When a subscriber
 provides the details on the landing page, the solution generates a notification to the
 configured operations contact. The sample has both the email and Azure storage queue notification implementation. The operations team then provisions the required
-resources, onboards the customer using their internal processes, and then comes
-back to the generated email and clicks on the link in the email to activate the
+resources, on-boards the customer using their internal processes, and then comes
+back to the generated notification and clicks on the link to activate the
 subscription.
 
 
@@ -355,7 +355,7 @@ registering two applications:
 
    ![A screenshot of a computer Description automatically generated](./ReadmeFiles/AdAppRegistration.png)
 
-### Creating and Configuring a SendGrid Account
+### Creating and Configuring a SendGrid Account when using email notifications
 
 Follow the steps in the
 [tutorial](https://docs.microsoft.com/en-us/azure/sendgrid-dotnet-how-to-send-email),
