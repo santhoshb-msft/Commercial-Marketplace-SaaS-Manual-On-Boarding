@@ -277,7 +277,8 @@ namespace CommandCenter.Mail
             var client = new SendGridClient(this.options.Mail.ApiKey);
             var response = await client.SendEmailAsync(msg, cancellationToken).ConfigureAwait(false);
 
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if ((response.StatusCode != System.Net.HttpStatusCode.OK) &&
+                (response.StatusCode != System.Net.HttpStatusCode.Accepted))
             {
                 throw new ApplicationException(await response.Body.ReadAsStringAsync(cancellationToken).ConfigureAwait(false));
             }
