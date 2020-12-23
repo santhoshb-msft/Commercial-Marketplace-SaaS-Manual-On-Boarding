@@ -41,8 +41,7 @@ jobs:
       working-directory: ./src
 
     - name: Publish
-      run: dotnet publish CommandCenter.csproj -c Release --self-contained true -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
-      working-directory: ./src
+      run: dotnet publish ./src/CommandCenter.csproj -c Release --self-contained true -o '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}' 
 
     - name: Deploy
       uses: azure/webapps-deploy@v2
