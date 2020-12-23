@@ -171,7 +171,7 @@ namespace CommandCenter.AzureQueues
                 new Tuple<string, string>("planId", provisionModel.NewPlanId == null ? provisionModel.PlanId : provisionModel.NewPlanId),
             };
 
-            var message = this.BuildLink(queryParams, controllerName, actionName);
+            var message = $"{{\"ActionLink\"= {this.BuildLink(queryParams, controllerName, actionName)}, \"Payload\" = {JsonConvert.SerializeObject(provisionModel)} }}";
 
             await this.queueClient.SendMessageAsync(message, cancellationToken).ConfigureAwait(false);
         }
