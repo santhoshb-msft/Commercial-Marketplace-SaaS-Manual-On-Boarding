@@ -17,7 +17,6 @@ namespace CommandCenter
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Http;
-    using Microsoft.AspNetCore.Mvc.Authorization;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -25,9 +24,8 @@ namespace CommandCenter
     using Microsoft.Identity.Web;
     using Microsoft.Identity.Web.UI;
     using Microsoft.Marketplace.SaaS;
-
-    using Serilog;
     using System.Threading.Tasks;
+    using Serilog;
 
     /// <summary>
     /// ASP.NET core startup class.
@@ -104,7 +102,7 @@ namespace CommandCenter
                 {
                     // Need to override the ValidAudience, since the incoming token has the app ID as the aud claim. 
                     // Library expects it to be api://<appId> format.
-                    options.TokenValidationParameters.ValidAudience = this.configuration["WebHookTokenParameters:ClientId"];
+                                        options.TokenValidationParameters.ValidAudience = this.configuration["WebHookTokenParameters:ClientId"];
                     options.TokenValidationParameters.ValidIssuer = $"https://sts.windows.net/{this.configuration["WebHookTokenParameters:TenantId"]}/";
                 });
 

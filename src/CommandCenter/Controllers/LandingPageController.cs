@@ -24,6 +24,7 @@ namespace CommandCenter.Controllers
     /// </summary>
     [Authorize(AuthenticationSchemes = OpenIdConnectDefaults.AuthenticationScheme)]
     // Specify the auth scheme to be used for logging on users. This is for supporting WebAPI auth
+    
     public class LandingPageController : Controller
     {
         private readonly ILogger<LandingPageController> logger;
