@@ -152,7 +152,7 @@ during registering the offer for the marketplace.
 The solution is put on a whitelist so it can call the marketplace REST API with
 those details. A client must use [service-to-service access token
 request](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-oauth2-client-creds-grant-flow#service-to-service-access-token-request)
-of the client credential workflow. Use the Marketplace Fulfillment API V2.0's resource ID, '20e940b3-4c77-4b0b-9a53-9e16a1b010a7' for the resource parameter if you are using AAD V1, and '20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default' if you are using AAD V2. 
+of the client credential workflow. Use the Marketplace Fulfillment API V2.0's resource ID, '20e940b3-4c77-4b0b-9a53-9e16a1b010a7' for the resource parameter if you are using AAD V1, and '20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default' for the scope parameter, if you are using AAD V2. 
 
 Please note the different requirements for the Azure AD interaction for the
 landing page and calling the APIs. I recommend two separate AAD applications,
