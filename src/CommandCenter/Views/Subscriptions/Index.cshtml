@@ -94,6 +94,10 @@
                         {
                             <span>Pending operations</span>
                         }
+                        @if (item.IsDimensionEnabled && item.State != SubscriptionStatusEnum.PendingFulfillmentStart)
+                        {
+                            <span> @Html.ActionLink("SendDimensionUsage", "SubscriptionDimensionUsage", new { item.SubscriptionId }) </span>
+                        }
                     </td>
                     <td>
                         @if (item.ExistingOperations)
