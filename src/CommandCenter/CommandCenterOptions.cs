@@ -4,6 +4,7 @@
 namespace CommandCenter
 {
     using System;
+    using System.Collections.Generic;
     using CommandCenter.Mail;
 
     /// <summary>
@@ -40,6 +41,16 @@ namespace CommandCenter
         /// Gets or sets the Azure Queue notifiction options.
         /// </summary>
         public AzureQueueOptions AzureQueue { get; set; }
+
+         /// <summary>
+        /// Gets or sets the UseMeteredDimensions.
+        /// </summary>
+        public bool EnableDimensionMeterReporting { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Dimensions.
+        /// </summary>
+        public List<Dimension> Dimensions { get; set; }
 
         /// <summary>
         /// Gets or sets the active notification handler.

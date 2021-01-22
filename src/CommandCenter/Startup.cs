@@ -26,6 +26,8 @@ namespace CommandCenter
     using Microsoft.Marketplace.SaaS;
     using System.Threading.Tasks;
     using Serilog;
+    using Microsoft.Marketplace.Metering;
+    using CommandCenter.DimensionUsageStore;
 
     /// <summary>
     /// ASP.NET core startup class.
@@ -135,8 +137,18 @@ namespace CommandCenter
                 return new MarketplaceSaaSClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, clientSecret: marketplaceClientOptions.ClientSecret);
             });
 
+            services.TryAddScoped<IMarketplaceMeteringClient>(sp =>
+            {
+                var marketplaceClientOptions = new MarketplaceClientOptions();
+                this.configuration.GetSection(MarketplaceClientOptions.MarketplaceClient).Bind(marketplaceClientOptions);
+                return new MarketplaceMeteringClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, clientSecret: marketplaceClientOptions.ClientSecret);
+            });
+
             services.TryAddScoped<IOperationsStore>(sp =>
                 new AzureTableOperationsStore(this.configuration["CommandCenter:OperationsStoreConnectionString"]));
+
+            services.TryAddScoped<IDimensionUsageStore>(sp =>
+                new AzureTableDimensionUsageStore(this.configuration["CommandCenter:OperationsStoreConnectionString"]));
 
             // Hack to save the host name and port during the handling the request. Please see the WebhookController and ContosoWebhookHandler implementations
             services.AddSingleton<ContosoWebhookHandlerOptions>();
