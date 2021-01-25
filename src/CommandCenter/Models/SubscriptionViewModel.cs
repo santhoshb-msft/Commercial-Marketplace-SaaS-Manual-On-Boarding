@@ -60,6 +60,11 @@ namespace CommandCenter.Models
         public int OperationCount { get; internal set; }
 
         /// <summary>
+        /// Gets a value indicating whether gets or sets ParticipatesInDimension.
+        /// </summary>
+        public bool IsDimensionEnabled { get; internal set; }
+
+        /// <summary>
         /// Creates a subscription model from a subscription.
         /// </summary>
         /// <param name="marketplaceSubscription">subscription.</param>

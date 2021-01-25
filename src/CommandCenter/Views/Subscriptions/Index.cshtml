@@ -83,17 +83,25 @@
                     </td>
 
                     <td>
-                        @if (!item.PendingOperations)
-                        {
-                            @foreach (var a in item.NextActions)
+                        <ul class="list-inline">
+                            @if (!item.PendingOperations)
                             {
-                                <span> @Html.ActionLink(Enum.GetName(typeof(ActionsEnum), a), "SubscriptionAction", new { subscriptionAction = a, subscriptionId = item.SubscriptionId }) </span>
+                                @foreach (var a in item.NextActions)
+                                {
+                                    <li>
+                                        <span> @Html.ActionLink(Enum.GetName(typeof(ActionsEnum), a), "SubscriptionAction", new { subscriptionAction = a, subscriptionId = item.SubscriptionId }, new {@class = "list-inline-item" }) </span>
+                                    </li>
+                                }
                             }
-                        }
-                        else
-                        {
-                            <span>Pending operations</span>
-                        }
+                            else
+                            {
+                                <li>Pending operations</li>
+                            }
+                            @if (item.IsDimensionEnabled && item.State != SubscriptionStatusEnum.PendingFulfillmentStart)
+                            {
+                                <li> @Html.ActionLink("SendDimensionUsage", "SubscriptionDimensionUsage", new { item.SubscriptionId }) </li>
+                            }
+                        </ul>
                     </td>
                     <td>
                         @if (item.ExistingOperations)
