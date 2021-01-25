@@ -1,10 +1,10 @@
 name: Deploy to App Service
 
 on:
-  pull_request:
+ 
+  workflow_dispatch:
     branches: 
-    - main
-
+      - main
 
 env:
   AZURE_WEBAPP_NAME: contososaas
