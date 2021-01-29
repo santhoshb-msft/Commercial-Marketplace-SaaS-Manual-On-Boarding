@@ -19,5 +19,6 @@ namespace CommandCenter.Models
         /// Gets or sets subscription ID.
         /// </summary>
         public Guid SubscriptionId { get; set; }
+        public string Message { get; internal set; }
     }
 }

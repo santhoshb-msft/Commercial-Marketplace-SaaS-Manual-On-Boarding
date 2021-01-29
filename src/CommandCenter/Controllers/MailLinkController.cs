@@ -48,12 +48,27 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(notificationModel));
             }
 
+            var subscriptionDetails = await this.marketplaceClient.FulfillmentOperations.GetSubscriptionAsync(notificationModel.SubscriptionId, null, null, cancellationToken).ConfigureAwait(false);
+
+            if (subscriptionDetails.SaasSubscriptionStatus != Microsoft.Marketplace.SaaS.Models.SubscriptionStatusEnum.PendingFulfillmentStart)
+            {
+                return this.View(
+                    new ActivateActionViewModel
+                    {
+                        SubscriptionId = notificationModel.SubscriptionId,
+                        PlanId = notificationModel.PlanId,
+                        Message = $"Could not activate,subscription is in {Enum.GetName(typeof(Microsoft.Marketplace.SaaS.Models.SubscriptionStatusEnum), subscriptionDetails.SaasSubscriptionStatus)} state",
+                    });
+            }
+
             await this.marketplaceProcessor.ActivateSubscriptionAsync(notificationModel.SubscriptionId, notificationModel.PlanId, cancellationToken).ConfigureAwait(false);
 
             return this.View(
                 new ActivateActionViewModel
                 {
-                    SubscriptionId = notificationModel.SubscriptionId, PlanId = notificationModel.PlanId,
+                    SubscriptionId = notificationModel.SubscriptionId,
+                    PlanId = notificationModel.PlanId,
+                    Message = "Subscription activated successfully",
                 });
         }
 
@@ -166,7 +181,8 @@ namespace CommandCenter.Controllers
             return this.View(
                 new ActivateActionViewModel
                 {
-                    SubscriptionId = notificationModel.SubscriptionId, PlanId = notificationModel.PlanId,
+                    SubscriptionId = notificationModel.SubscriptionId,
+                    PlanId = notificationModel.PlanId,
                 });
         }
 
