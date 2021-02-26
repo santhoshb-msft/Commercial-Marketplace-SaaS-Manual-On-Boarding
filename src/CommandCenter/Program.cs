@@ -35,14 +35,17 @@ namespace CommandCenter
         /// <returns>int.</returns>
         public static int Main(string[] args)
         {
-            CloudStorageAccount storage = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=ercmktplc;AccountKey=9XPS5+eorM4eST0pp3XH98jtNwS5aomqYwU6w4hoTnJT89bYX9X3Tjgd4RrQ4TK8ktEByV4gPnIYT/l+O/yuVQ==;EndpointSuffix=core.windows.net");
+            // Add storage account logging if desired.
+            //CloudStorageAccount storage = CloudStorageAccount.Parse("");
+
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.AzureTableStorage(storage)
+                // Remove the commeant below if using storage account to log.
+                // .WriteTo.AzureTableStorage(storage)
                 .CreateLogger();
 
             try

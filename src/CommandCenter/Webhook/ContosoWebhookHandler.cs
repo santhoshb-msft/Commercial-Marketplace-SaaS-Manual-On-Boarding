@@ -40,20 +40,10 @@ namespace CommandCenter.Webhook
 
             if (payload.Status == OperationStatusEnum.Succeeded)
             {
-                var response = await this.marketplaceClient.SubscriptionOperations.UpdateOperationStatusWithHttpMessagesAsync(
-                    payload.SubscriptionId,
-                    payload.OperationId,
-                    null,
-                    null,
-                    payload.PlanId,
-                    null,
-                    UpdateOperationStatusEnum.Success).ConfigureAwait(false);
-
-                // Change request is complete
-                if (response.Response.IsSuccessStatusCode)
-                {
-                    await this.notificationHelper.NotifyChangePlanAsync(payload).ConfigureAwait(false);
-                }
+                await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
+                        payload.SubscriptionId,
+                        payload.OperationId,
+                        new UpdateOperation { PlanId = payload.PlanId, Status = UpdateOperationStatusEnum.Success }).ConfigureAwait(false);
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {
@@ -71,20 +61,10 @@ namespace CommandCenter.Webhook
 
             if (payload.Status == OperationStatusEnum.Succeeded)
             {
-                Microsoft.Rest.Azure.AzureOperationResponse response = await this.marketplaceClient.SubscriptionOperations.UpdateOperationStatusWithHttpMessagesAsync(
-                    payload.SubscriptionId,
-                    payload.OperationId,
-                    null,
-                    null,
-                    null,
-                    payload.Quantity,
-                    UpdateOperationStatusEnum.Success).ConfigureAwait(false);
-
-                // Change request is complete
-                if (response.Response.IsSuccessStatusCode)
-                {
-                    await this.notificationHelper.NotifyChangeQuantityAsync(payload).ConfigureAwait(false);
-                }
+                await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
+                        payload.SubscriptionId,
+                        payload.OperationId,
+                        new UpdateOperation { Quantity = payload.Quantity, Status = UpdateOperationStatusEnum.Success }).ConfigureAwait(false);
             }
             else if (payload.Status == OperationStatusEnum.Conflict || payload.Status == OperationStatusEnum.Failed)
             {

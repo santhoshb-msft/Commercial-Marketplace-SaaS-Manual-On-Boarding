@@ -28,6 +28,7 @@ namespace CommandCenter
     using Serilog;
     using Microsoft.Marketplace.Metering;
     using CommandCenter.DimensionUsageStore;
+    using Azure.Identity;
 
     /// <summary>
     /// ASP.NET core startup class.
@@ -130,18 +131,19 @@ namespace CommandCenter
 
             services.Configure<CommandCenterOptions>(this.configuration.GetSection("CommandCenter"));
 
+            var marketplaceClientOptions = new MarketplaceClientOptions();
+            this.configuration.GetSection(MarketplaceClientOptions.MarketplaceClient).Bind(marketplaceClientOptions);
+
+            var creds = new ClientSecretCredential(marketplaceClientOptions.TenantId.ToString(), marketplaceClientOptions.ClientId.ToString(), marketplaceClientOptions.ClientSecret);
+
             services.TryAddScoped<IMarketplaceSaaSClient>(sp =>
             {
-                var marketplaceClientOptions = new MarketplaceClientOptions();
-                this.configuration.GetSection(MarketplaceClientOptions.MarketplaceClient).Bind(marketplaceClientOptions);
-                return new MarketplaceSaaSClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, clientSecret: marketplaceClientOptions.ClientSecret);
+                return new MarketplaceSaaSClient(creds);
             });
 
             services.TryAddScoped<IMarketplaceMeteringClient>(sp =>
             {
-                var marketplaceClientOptions = new MarketplaceClientOptions();
-                this.configuration.GetSection(MarketplaceClientOptions.MarketplaceClient).Bind(marketplaceClientOptions);
-                return new MarketplaceMeteringClient(marketplaceClientOptions.TenantId, marketplaceClientOptions.ClientId, clientSecret: marketplaceClientOptions.ClientSecret);
+                return new MarketplaceMeteringClient(creds);
             });
 
             services.TryAddScoped<IOperationsStore>(sp =>
