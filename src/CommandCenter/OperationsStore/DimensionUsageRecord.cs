@@ -49,7 +49,7 @@ namespace CommandCenter.DimensionUsageStore
         /// <summary>
         /// Gets or sets time in UTC when the usage event occurred.
         /// </summary>
-        public System.DateTime? EffectiveStartTime { get; set; }
+        public System.DateTimeOffset? EffectiveStartTime { get; set; }
 
         /// <summary>
         /// Gets or sets plan associated with the purchased offer.

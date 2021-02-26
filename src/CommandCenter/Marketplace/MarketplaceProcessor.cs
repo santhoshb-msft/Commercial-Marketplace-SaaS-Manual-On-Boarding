@@ -41,11 +41,10 @@ namespace CommandCenter.Marketplace
         /// <inheritdoc/>
         public async Task ActivateSubscriptionAsync(Guid subscriptionId, string planId, CancellationToken cancellationToken)
         {
-            await this.marketplaceClient.FulfillmentOperations.ActivateSubscriptionAsync(
+            await this.marketplaceClient.Fulfillment.ActivateSubscriptionAsync(
                 subscriptionId,
+                new SubscriberPlan { PlanId = planId },
                 null,
-                null,
-                planId,
                 null,
                 cancellationToken).ConfigureAwait(false);
 
@@ -60,11 +59,11 @@ namespace CommandCenter.Marketplace
                 throw new ApplicationException("marketplace purchase identification token is empty");
             }
 
-            var resolvedSubscription = await this.marketplaceClient.FulfillmentOperations.ResolveAsync(token, null, null, cancellationToken).ConfigureAwait(false);
+            var resolvedSubscription = await this.marketplaceClient.Fulfillment.ResolveAsync(token, null, null, cancellationToken).ConfigureAwait(false);
 
             if (resolvedSubscription != default)
             {
-                this.logger.LogInformation($"Resolved subscription {resolvedSubscription.Id} with plan {resolvedSubscription.PlanId}");
+                this.logger.LogInformation($"Resolved subscription {resolvedSubscription.Value.Id} with plan {resolvedSubscription.Value.PlanId}");
             }
 
             return resolvedSubscription;
@@ -75,14 +74,12 @@ namespace CommandCenter.Marketplace
         {
             this.logger.LogInformation($"Ackonwledging operation {operationId} for subscription {subscriptionId}");
 
-            await this.marketplaceClient.SubscriptionOperations.UpdateOperationStatusAsync(
+            await this.marketplaceClient.Operations.UpdateOperationStatusAsync(
                     subscriptionId,
                     operationId,
+                    new UpdateOperation { PlanId = planId, Quantity = quantity, Status = UpdateOperationStatusEnum.Success },
                     null,
                     null,
-                    planId,
-                    quantity,
-                    UpdateOperationStatusEnum.Success,
                     cancellationToken).ConfigureAwait(false);
         }
 
@@ -95,7 +92,7 @@ namespace CommandCenter.Marketplace
             }
 
             // Always query the fulfillment API for the received Operation for security reasons. Webhook endpoint is not authenticated.
-            var operationDetails = await this.marketplaceClient.SubscriptionOperations.GetOperationStatusAsync(
+            var operationDetails = await this.marketplaceClient.Operations.GetOperationStatusAsync(
                 payload.SubscriptionId,
                 payload.OperationId,
                 null,

@@ -165,14 +165,14 @@ namespace CommandCenter.Mail
                     notificationModel.SubscriptionId.ToString()),
             };
 
-            var subscriptionDetails = await this.marketplaceClient.FulfillmentOperations.GetSubscriptionAsync(
+            var subscriptionDetails = await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(
                 notificationModel.SubscriptionId,
                 Guid.Empty,
                 Guid.Empty,
                 cancellationToken).ConfigureAwait(false);
 
             await this.SendEmailAsync(
-                () => $"Operation failure, {subscriptionDetails.Name}",
+                () => $"Operation failure, {subscriptionDetails.Value.Name}",
                 () =>
                     $"<p>Operation failure. {this.BuildALink("Operations", queryParams, "Click here to list all operations for this subscription", "Subscriptions")}</p>. "
                     + $"<p> Details are {BuildTable(JObject.Parse(JsonConvert.SerializeObject(subscriptionDetails)))}</p>",
@@ -319,14 +319,14 @@ namespace CommandCenter.Mail
                 mailBody = $"{mailBody}" + $"{actionLink}";
             }
 
-            var subscriptionDetails = await this.marketplaceClient.FulfillmentOperations.GetSubscriptionAsync(
+            var subscriptionDetails = await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(
                 notificationModel.SubscriptionId,
                 Guid.Empty,
                 Guid.Empty,
                 cancellationToken).ConfigureAwait(false);
 
             await this.SendEmailAsync(
-                () => $"{subject}, {subscriptionDetails.Name}",
+                () => $"{subject}, {subscriptionDetails.Value.Name}",
                 () => $"<p>{mailBody}</p>"
                                        + $"<br/><div> Details are {BuildTable(JObject.Parse(JsonConvert.SerializeObject(subscriptionDetails)))}</div>",
                 cancellationToken).ConfigureAwait(false);

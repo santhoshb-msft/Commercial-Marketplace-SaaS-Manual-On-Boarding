@@ -48,7 +48,7 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(notificationModel));
             }
 
-            var subscriptionDetails = await this.marketplaceClient.FulfillmentOperations.GetSubscriptionAsync(notificationModel.SubscriptionId, null, null, cancellationToken).ConfigureAwait(false);
+            var subscriptionDetails = (await this.marketplaceClient.Fulfillment.GetSubscriptionAsync(notificationModel.SubscriptionId, null, null, cancellationToken).ConfigureAwait(false)).Value;
 
             if (subscriptionDetails.SaasSubscriptionStatus != Microsoft.Marketplace.SaaS.Models.SubscriptionStatusEnum.PendingFulfillmentStart)
             {
@@ -170,11 +170,10 @@ namespace CommandCenter.Controllers
                 throw new ArgumentNullException(nameof(notificationModel));
             }
 
-            var result = await this.marketplaceClient.FulfillmentOperations.UpdateSubscriptionAsync(
+            var result = await this.marketplaceClient.Fulfillment.UpdateSubscriptionAsync(
                 notificationModel.SubscriptionId,
+                new Microsoft.Marketplace.SaaS.Models.SubscriberPlan { PlanId = notificationModel.PlanId },
                 null,
-                null,
-                notificationModel.PlanId,
                 null,
                 cancellationToken).ConfigureAwait(false);
 
