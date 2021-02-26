@@ -14,7 +14,7 @@ Taxonomies for products and languages: https://review.docs.microsoft.com/new-hop
 
 Some solutions require out-of-band or manual on-boarding steps, such as validating a customer, running scripts manually for deploying resources needed for a new customer etc. This sample uses notifications for a new customer, or any changes on the subscription status made outside of the solution code.
 
-**Please note the sample uses the preview version of .NET SDK for Commercial Marketplace source (Microsoft.Marketplace project in the solution) and refers to it as a submodule. Please see [git reference for cloning a project with submodules](https://www.git-scm.com/book/en/v2/Git-Tools-Submodules#_cloning_submodules:~:text=Cloning%20a%20Project%20with%20Submodules).**
+**Please note the sample uses the preview version of .NET SDK for Commercial Marketplace source (Microsoft.Marketplace project in the solution). You can use the ```git read-tree``` command as shown in the [read-tree.txt](./read-tree.txt) file. Please check the [git read-tree documentation](https://git-scm.com/docs/git-read-tree) for details.**
 
 You can also find a short
 [video published on the Azure Friday channel](https://www.youtube.com/watch?v=2Oaq5dHczMY)
