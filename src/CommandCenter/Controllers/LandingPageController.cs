@@ -86,13 +86,13 @@ namespace CommandCenter.Controllers
             // resolvedSubscription.Subscription is null when calling mock endpoint
             var existingSubscription = resolvedSubscription.Subscription;
 
-            var availablePlans = await this.marketplaceClient.FulfillmentOperations.ListAvailablePlansAsync(
+            var availablePlans = await this.marketplaceClient.Fulfillment.ListAvailablePlansAsync(
                 resolvedSubscription.Id.Value,
                 null,
                 null,
                 cancellationToken).ConfigureAwait(false);
 
-            var pendingOperations = await this.marketplaceClient.SubscriptionOperations.ListOperationsAsync(
+            var pendingOperations = await this.marketplaceClient.Operations.ListOperationsAsync(
                 resolvedSubscription.Id.Value,
                 null,
                 null,
@@ -110,9 +110,9 @@ namespace CommandCenter.Controllers
                 // Assuming this will be set to the value the customer already set when subscribing, if we are here after the initial subscription activation
                 // Landing page is used both for initial provisioning and configuration of the subscription.
                 Region = TargetContosoRegionEnum.NorthAmerica,
-                AvailablePlans = availablePlans.Plans,
+                AvailablePlans = availablePlans?.Value.Plans.ToList(),
                 SubscriptionStatus = existingSubscription?.SaasSubscriptionStatus ?? SubscriptionStatusEnum.NotStarted,
-                PendingOperations = pendingOperations?.Operations?.Any(o => o.Status == OperationStatusEnum.InProgress) ?? false,
+                PendingOperations = pendingOperations?.Value.Operations?.Any(o => o.Status == OperationStatusEnum.InProgress) ?? false,
             };
 
             if (provisioningModel != default)
