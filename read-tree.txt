@@ -6,6 +6,7 @@ git read-tree --prefix=src/Microsoft.Marketplace -u marketplaceclient/main:src
 git commit
 
 # for updates
+git fetch marketplaceclient
 git merge -s ours --no-commit  --allow-unrelated-histories marketplaceclient/main
 git rm -rf src/Microsoft.Marketplace
 git read-tree --prefix=src/Microsoft.Marketplace -u marketplaceclient/main:src
