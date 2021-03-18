@@ -1,4 +1,12 @@
+# initial
 git remote add marketplaceclient https://github.com/microsoft/commercial-marketplace-client-dotnet.git
 git fetch marketplaceclient
 git merge -s ours --no-commit  --allow-unrelated-histories marketplaceclient/main
 git read-tree --prefix=src/Microsoft.Marketplace -u marketplaceclient/main:src
+git commit
+
+# for updates
+git merge -s ours --no-commit  --allow-unrelated-histories marketplaceclient/main
+git rm -rf src/Microsoft.Marketplace
+git read-tree --prefix=src/Microsoft.Marketplace -u marketplaceclient/main:src
+git pull -s subtree -Xsubtree="src/Microsoft.Marketplace" marketplaceclient main

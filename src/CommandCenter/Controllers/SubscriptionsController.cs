@@ -229,7 +229,7 @@ namespace CommandCenter.Controllers
             }
             else
             {
-                dimRecord.Status = UsageEventStatusEnum.InvalidDimensionBadArgument.ToString();
+                dimRecord.Status = UsageEventStatusEnum.BadArgument.ToString();
                 dimRecord.Quantity = usage.Quantity;
                 dimRecord.Dimension = usage.Dimension;
                 dimRecord.EffectiveStartTime = usage.EffectiveStartTime;
