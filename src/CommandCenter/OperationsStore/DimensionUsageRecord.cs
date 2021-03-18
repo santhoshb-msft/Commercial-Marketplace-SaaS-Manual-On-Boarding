@@ -39,7 +39,7 @@ namespace CommandCenter.DimensionUsageStore
         /// <summary>
         /// Gets or sets number of units consumed.
         /// </summary>
-        public long? Quantity { get; set; }
+        public double? Quantity { get; set; }
 
         /// <summary>
         /// Gets or sets dimension identifier.
