@@ -59,14 +59,22 @@ namespace CommandCenter.Marketplace
                 throw new ApplicationException("marketplace purchase identification token is empty");
             }
 
-            var resolvedSubscription = await this.marketplaceClient.Fulfillment.ResolveAsync(token, null, null, cancellationToken).ConfigureAwait(false);
-
-            if (resolvedSubscription != default)
+            try
             {
-                this.logger.LogInformation($"Resolved subscription {resolvedSubscription.Value.Id} with plan {resolvedSubscription.Value.PlanId}");
-            }
+                var resolvedSubscription = await this.marketplaceClient.Fulfillment.ResolveAsync(token, null, null, cancellationToken).ConfigureAwait(false);
 
-            return resolvedSubscription;
+                if (resolvedSubscription != default)
+                {
+                    this.logger.LogInformation($"Resolved subscription {resolvedSubscription.Value.Id} with plan {resolvedSubscription.Value.PlanId}");
+                }
+
+                return resolvedSubscription;
+            }
+            catch (Azure.RequestFailedException e)
+            {
+                this.logger.LogError($"Cannot resolve the token {token} for a subscription. Details are {e.ToString()}");
+                return default(ResolvedSubscription);
+            }
         }
 
         /// <inheritdoc/>
