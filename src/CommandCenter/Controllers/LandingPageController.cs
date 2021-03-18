@@ -71,6 +71,7 @@ namespace CommandCenter.Controllers
             if (string.IsNullOrEmpty(token))
             {
                 this.ModelState.AddModelError(string.Empty, "Token URL parameter cannot be empty");
+                this.ViewBag.Message = "Token URL parameter cannot be empty";
                 return this.View();
             }
 
@@ -80,7 +81,8 @@ namespace CommandCenter.Controllers
             // Rest is implementation detail. In this sample, we chose allow the subscriber to change the plan for an activated subscriptio
             if (resolvedSubscription == default(ResolvedSubscription))
             {
-                return default;
+                this.ViewBag.Message = "Token did not resolve to a subscription";
+                return this.View();
             }
 
             // resolvedSubscription.Subscription is null when calling mock endpoint
