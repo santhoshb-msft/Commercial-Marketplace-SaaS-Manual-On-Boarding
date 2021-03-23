@@ -153,7 +153,7 @@ during registering the offer for the marketplace.
 The solution is put on an [access control list](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow#access-control-lists) so it can call the marketplace REST API with
 those details. A client must use [client credentials grant to get a token](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow#get-a-token).
 
-> **:Important:**
+> **:warning: Important:**
 > The marketplace fulfillment API V2.0's resource ID is ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7```.
 
 If you are using the V1 end point for AAD, use the value ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7``` for the resource parameter. If you are using AAD V2 endpoint (recommended), use ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default``` for value of the scope parameter.
