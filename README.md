@@ -2,7 +2,7 @@
 
 ![Deploy to App Service](https://github.com/microsoft/Commercial-Marketplace-SaaS-Manual-On-Boarding/workflows/Deploy%20to%20App%20Service/badge.svg)
 
-# Azure Commercial Marketplace SaaS Offers Sample - Manual on-boarding of customers
+# Microsoft commercial marketplace SaaS offers sample - Manual on-boarding of customers
 
 <!-- 
 Guidelines on README format: https://review.docs.microsoft.com/help/onboard/admin/samples/concepts/readme-template?branch=master
@@ -14,7 +14,7 @@ Taxonomies for products and languages: https://review.docs.microsoft.com/new-hop
 
 Some solutions require out-of-band or manual on-boarding steps, such as validating a customer, running scripts manually for deploying resources needed for a new customer etc. This sample uses notifications for a new customer, or any changes on the subscription status made outside of the solution code.
 
-**Please note the sample uses the preview version of .NET SDK for Commercial Marketplace source (Microsoft.Marketplace project in the solution). You can use the ```git read-tree``` command as shown in the [read-tree.txt](./read-tree.txt) file. Please check the [git read-tree documentation](https://git-scm.com/docs/git-read-tree) for details.**
+**Please note the sample uses a [personal NuGet package](https://www.nuget.org/packages/Ercenk.Microsoft.Marketplace) based on the preview version of [.NET client library for Commercial Marketplace](https://github.com/microsoft/commercial-marketplace-client-dotnet).**
 
 You can also find a short
 [video published on the Azure Friday channel](https://www.youtube.com/watch?v=2Oaq5dHczMY)
@@ -27,15 +27,14 @@ The sample requires .NET 5.\*.\*, and an Azure Storage account.
 ## Table of contents
 
 In the sections below you will find:
-
-- [Azure Commercial Marketplace SaaS Offers Sample - Manual on-boarding of customers](#azure-commercial-marketplace-saas-offers-sample---manual-on-boarding-of-customers)
+- [Microsoft commercial marketplace SaaS offers sample - Manual on-boarding of customers](#microsoft-commercial-marketplace-saas-offers-sample---manual-on-boarding-of-customers)
   - [Prerequisites](#prerequisites)
   - [Table of contents](#table-of-contents)
-  - [Integrating a Software as a Solution with Azure Marketplace](#integrating-a-software-as-a-solution-with-azure-marketplace)
-    - [Landing Page](#landing-page)
+  - [Integrating a software as a service with commercial marketplace](#integrating-a-software-as-a-service-with-commercial-marketplace)
+    - [Landing page](#landing-page)
       - [Azure AD Requirement: Multi-Tenant Application Registration](#azure-ad-requirement-multi-tenant-application-registration)
-    - [Webhook Endpoint](#webhook-endpoint)
-    - [Marketplace REST API Interactions](#marketplace-rest-api-interactions)
+    - [Webhook endpoint](#webhook-endpoint)
+    - [Marketplace REST API interactions](#marketplace-rest-api-interactions)
       - [Azure AD Requirement: Single-Tenant Registration](#azure-ad-requirement-single-tenant-registration)
     - [Activating a Subscription](#activating-a-subscription)
   - [Scenario for the Sample](#scenario-for-the-sample)
@@ -66,47 +65,47 @@ In the sections below you will find:
 Let's first start with mentioning how to integrate a SaaS solution with Azure
 Marketplace.
 
-## Integrating a Software as a Solution with Azure Marketplace
+## Integrating a software as a service with commercial marketplace
 
-Many different types of solution offers are available on Azure Marketplace for
+Many different types of solution offers are available on Microsoft commercial marketplace for
 the customers to subscribe. Those different types include options such as
 virtual machines (VMs), solution templates, and containers, where a customer can
-deploy the solution to their Azure subscription. Azure Marketplace also provides
+deploy the solution to their Azure subscription. Commercial marketplace also provides
 the option to subscribe to a _Software as a Service (SaaS)_ solution, which runs
 in an environment other than the customer's subscription.
 
-A SaaS solution publisher needs to integrate with the Azure Marketplace commerce
+A SaaS solution publisher needs to integrate with the marketplace commerce
 capabilities for enabling the solution to be available for purchase.
 
-Azure Marketplace talks to a SaaS solution on two channels:
+Commercial marketplace talks to a SaaS solution on two channels:
 
-- [Landing Page](#landing-page): The Azure Marketplace sends the subscriber to
+- [Landing Page](#landing-page): The marketplace sends the subscriber to
   this page maintained by the publisher to capture the details for provisioning
   the solution for the subscriber. The subscriber is on this page for activating
   or modifying the subscription.
-- [Webhook](#webhook-endpoint): This is an endpoint where the Azure Marketplace
+- [Webhook](#webhook-endpoint): This is an endpoint where the marketplace
   notifies the solution of events, such as subscription cancellation or
   modification, or a suspend request for the subscription, should the customer's
   payment method become unusable.
 
-The SaaS solution in turn uses the REST API exposed on the Azure Marketplace
+The SaaS solution in turn uses the REST API exposed on the marketplace
 side to perform corresponding operations. Those can be activating, cancelling,
 or updating a subscription.
 
 To summarize, we can talk about three interaction areas between the Azure
 Marketplace and the SaaS solution,
 
-1. Landing Page
-2. Webhook Endpoint
-3. Marketplace REST API Interactions
+1. Landing page
+2. Webhook endpoint
+3. Marketplace REST API interactions
 
-![overview](./ReadmeFiles/AmpIntegrationOverview.png)
+![overview](./ReadmeFiles/IntegrationOverview.png)
 
-### Landing Page
+### Landing page
 
 On this page, the subscriber provides additional details to the publisher so the
 publisher can provision required resources for the new subscription. A publisher
-provides the URL for this page when registering the offer for Azure Marketplace.
+provides the URL for this page when registering the offer for commercial marketplace.
 
 The publisher can collect other information from the subscriber to onboard the
 customer, and provision additional resources as needed. The publisher's solution
@@ -125,11 +124,11 @@ using the
 flow. The publisher should register a multi-tenant AAD application for the
 landing page.
 
-### Webhook Endpoint
+### Webhook endpoint
 
-The Azure Marketplace calls this endpoint to notify the solution for the events
+The commercial marketplace calls this endpoint to notify the solution for the events
 happening on the marketplace side. Those events can be the cancellation or
-modification of the subscription through Azure Marketplace, or suspending it
+modification of the subscription through commercial marketplace, or suspending it
 because of the unavailability of a customer's payment method. A publisher
 provides the URL for this webhook endpoint when registering the offer for Azure
 Marketplace.
@@ -137,7 +136,7 @@ Marketplace.
 > **:warning: IMPORTANT:** This endpoint is not protected. The implementation
 > should call the marketplace REST API to ensure the validity of the event. This endpoint also receives a JWT token. You can validate the token against AAD, and check the audience to make sure this call is addressed to you. Please see the startup.cs file to see the implementation.
 
-### Marketplace REST API Interactions
+### Marketplace REST API interactions
 
 The _Fulfillment API_ is documented
 [here](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-fulfillment-api-v2)
@@ -151,10 +150,13 @@ The publisher should register an AAD application and provide the `AppID`
 (ClientId) and the `Tenant ID` (AAD directory where the app is registered)
 during registering the offer for the marketplace.
 
-The solution is put on a whitelist so it can call the marketplace REST API with
-those details. A client must use [service-to-service access token
-request](https://docs.microsoft.com/en-us/azure/active-directory/develop/v1-oauth2-client-creds-grant-flow#service-to-service-access-token-request)
-of the client credential workflow. Use the Marketplace Fulfillment API V2.0's resource ID, '20e940b3-4c77-4b0b-9a53-9e16a1b010a7' for the resource parameter if you are using AAD V1, and '20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default' for the scope parameter, if you are using AAD V2. 
+The solution is put on an [access control list](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow#access-control-lists) so it can call the marketplace REST API with
+those details. A client must use [client credentials grant to get a token](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow#get-a-token).
+
+> **:Important:**
+> The marketplace fulfillment API V2.0's resource ID is ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7```.
+
+If you are using the V1 end point for AAD, use the value ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7``` for the resource parameter. If you are using AAD V2 endpoint (recommended), use ```20e940b3-4c77-4b0b-9a53-9e16a1b010a7/.default``` for value of the scope parameter.
 
 Please note the different requirements for the Azure AD interaction for the
 landing page and calling the APIs. I recommend two separate AAD applications,
@@ -172,7 +174,7 @@ Let's go through the steps of activating a subscription to an offer.
 
 ![AuthandAPIFlow](./ReadmeFiles/Auth_and_API_flow.png)
 
-1. Customer subscribes to an offer on Azure Marketplace.
+1. Customer subscribes to an offer on commercial marketplace.
 2. Commerce engine generates a marketplace token for the landing page. This is
    an opaque token, unlike a JSON Web Token (JWT) that is returned when
    authenticating against Azure AD, and does not contain any information. It is
@@ -224,7 +226,7 @@ subscription.
 
 
 Please see my overview for the integration points in
-[Integrating a Software as a Solution with Azure Marketplace](#integrating-a-software-as-a-solution-with-azure-marketplace).
+[Integrating a software as a service with Microsoft commercial marketplace](#integrating-a-software-as-a-solution-with-azure-marketplace).
 
 ### Architecture Overview and Process Flow of the Solution
 
@@ -252,10 +254,10 @@ situations such as:
    subscription, and gets transferred to the landing page.
 3. Landing page uses Azure Active Directory (with OpenID Connect flow) to log
    the user on.
-4. Landing page uses the SDK to resolve the subscription to get the details,
+4. Landing page uses the client library to resolve the subscription to get the details,
    using the marketplace token on the landing page URL token parameter.
-5. SDK gets an access token from Azure Active Directory (AAD).
-6. SDK calls **resolve** operation on the Fulfillment API, using the access
+5. Client library gets an access token from Azure Active Directory (AAD).
+6. Client library calls **resolve** operation on the Fulfillment API, using the access
    token as a bearer token.
 7. Subscriber fills in the other details on the landing page that will help the
    operations team to kick of the provisioning process. The landing page asks
@@ -273,9 +275,9 @@ situations such as:
 9. Operations team takes the appropriate steps (qualifying, provisioning
    resources, etc.).
 10. Once complete, operation team clicks on the activate link in the message.
-11. The sample uses the SDK to activate the subscription.
-12. SDK gets an access token from Azure Active Directory (AAD).
-13. SDK calls the `activate` operation on the Fulfillment API.
+11. The sample uses the client library to activate the subscription.
+12. Client library gets an access token from Azure Active Directory (AAD).
+13. Client library calls the `activate` operation on the Fulfillment API.
 14. The subscriber may eventually unsubscribe from the subscription by deleting
     it, or may stop fulfilling their monetary commitment to Microsoft.
 15. The commerce engine sends a notification on the webhook at this time, to
@@ -341,7 +343,7 @@ directory, you can skip the following steps and go directly to
 As I mentioned in the landing page and webhook sections above, I recommend
 registering two applications:
 
-1. **For the Landing Page:** Azure Marketplace SaaS offers are required to have
+1. **For the Landing Page:** Commercial marketplace SaaS offers are required to have
    a landing page, authenticating through Azure Active Directory. Register it as
    described in the
    [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-v2-aspnet-core-webapp#option-2-register-and-manually-configure-your-application-and-code-sample).
@@ -352,7 +354,7 @@ registering two applications:
    URLs: the base `/` URL of the web app and another web app URL with
    `/signin-oidc` added.
 
-2. **To authenticate Azure Marketplace Fulfillment APIs,** you can register a
+2. **To authenticate marketplace fulfillment APIs,** you can register a
    **single tenant application**.
 
    ![A screenshot of a computer Description automatically generated](./ReadmeFiles/AdAppRegistration.png)
@@ -395,7 +397,7 @@ You will need to replace the values marked as `CHANGE`, either by editing the
 | WebHookTokenParameters:Instance                   | Keep        | This is used by the library                                                                                                                                                                                   |
 | WebHookTokenParameters:TenantId                   | Change      | Set the same value as MarketplaceClient:TenantId                                                                                                                                                              |
 | WebHookTokenParameters:ClientId                   | Change      | Set the same value as MarketplaceClient:ClientId                                                                                                                                                              |
-| CommandCenter:OperationsStoreConnectionString     | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [SDK documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store) |
+| CommandCenter:OperationsStoreConnectionString     | Change      | Copy the connection string of the storage account you have created in the previous step. Please see [Client library documentation for details](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient#operations-store) |
 | CommandCenter:Mail:OperationsTeamEmail            | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. The sample sends emails to this address.                                                                                                 |
 | CommandCenter:Mail:FromEmail                      | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. Sendgrid requires a "from" email address when sending emails.                                                                            |
 | CommandCenter:Mail:ApiKey                         | Change      | Use this section if ActiveNotificationHandler is EmailNotifications. Sendgrid API key.                                                                                                                        |
@@ -547,6 +549,8 @@ deployed in earlier steps.
    the Single-Tenant Application that was created.
 5. **Save Draft:** save the current page.
 
+![How does it map?](./readmefiles/Mapping_to_partner_center.png)
+
 #### Plan Overview
 
 ![Microsoft Partner Center - Plan Overview](./ReadmeFiles/MicrosoftPartnerCenter-PlanOverview.png)
@@ -651,5 +655,3 @@ Customer searches for the offer on Azure Portal
     customer
 
     ![purchaser10](./ReadmeFiles/Purchaser10.png)
-
-
