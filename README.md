@@ -41,7 +41,8 @@ In the sections below you will find:
     - [Architecture Overview and Process Flow of the Solution](#architecture-overview-and-process-flow-of-the-solution)
     - [Walking-through the Scenario Subscription Process](#walking-through-the-scenario-subscription-process)
   - [Running the Sample](#running-the-sample)
-    - [Creating a Web Application on Azure App Service and Deploy the Sample](#creating-a-web-application-on-azure-app-service-and-deploy-the-sample)
+    - [Creating a web application on Azure App Service and deploying the sample with Visual Studio](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio)
+    - [Creating a web application on Azure App Service and deploying the sample with Visual Studio Code](#creating-a-web-application-on-azure-app-service-and-deploying-the-sample-with-visual-studio-code)
     - [Registering Azure Active Directory Applications](#registering-azure-active-directory-applications)
       - [Creating a New Directory](#creating-a-new-directory)
       - [Registering the Apps](#registering-the-apps)
@@ -288,7 +289,7 @@ situations such as:
 
 ## Running the Sample
 
-### Creating a Web Application on Azure App Service and Deploy the Sample
+### Creating a web application on Azure App Service and deploying the sample with Visual Studio
 
 I am assuming you have already cloned the code in this repo. Open the solution
 in Visual Studio, and follow the steps for deploying the solution starting from
@@ -298,6 +299,17 @@ this
 The following is how my Visual Studio Publish profile looks:
 
 ![publishprofile](./ReadmeFiles/PublishProfile.png)
+
+### Creating a web application on Azure App Service and deploying the sample with Visual Studio Code
+
+Make sure you have [Azure Tools](https://marketplace.visualstudio.com/items?itemName=ms-vscode.vscode-node-azure-pack) or [Azure App Service](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-azureappservice) extension.
+
+> **:warning: Important:**
+> Open Visual Studio Code at the src/CommandSenter folder, not at the repo root.
+
+Create a new Web App with the Azure App Service extension.
+
+Deploy to the new Web App with the extension.
 
 ### Registering Azure Active Directory Applications
 
