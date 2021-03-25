@@ -311,6 +311,8 @@ Create a new Web App with the Azure App Service extension.
 
 Deploy to the new Web App with the extension.
 
+Alternatively, follow the [tutorial](https://docs.microsoft.com/en-us/aspnet/core/tutorials/publish-to-azure-webapp-using-vscode?view=aspnetcore-5.0), and modify the process as you see fit.
+
 ### Registering Azure Active Directory Applications
 
 I usually maintain a separate Azure Active Directory tenant (directory) for my
