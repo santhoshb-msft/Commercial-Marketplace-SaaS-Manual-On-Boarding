@@ -88,27 +88,35 @@ namespace CommandCenter.Controllers
         /// <returns>Action result.</returns>
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var subscriptions = await marketplaceClient.Fulfillment.ListSubscriptionsAsync(cancellationToken: cancellationToken).ToListAsync();
-
-            var subscriptionsViewModel = subscriptions.Select(SubscriptionViewModel.FromSubscription)
-                .Where(s => s.State != SubscriptionStatusEnum.Unsubscribed || this.options.ShowUnsubscribed);
-
-            var newViewModel = new List<SubscriptionViewModel>();
-
-            var taskList = new List<Task<SubscriptionViewModel>>();
-
-            foreach (var subscription in subscriptionsViewModel)
+            try
             {
-                taskList.Add(this.GetSubscriptionDetails(subscription, cancellationToken));
-            }
+                var subscriptions = await marketplaceClient.Fulfillment.ListSubscriptionsAsync(cancellationToken: cancellationToken).ToListAsync();
 
-            foreach (var task in taskList)
+                var subscriptionsViewModel = subscriptions.Select(SubscriptionViewModel.FromSubscription)
+                    .Where(s => s.State != SubscriptionStatusEnum.Unsubscribed || this.options.ShowUnsubscribed);
+
+                var newViewModel = new List<SubscriptionViewModel>();
+
+                var taskList = new List<Task<SubscriptionViewModel>>();
+
+                foreach (var subscription in subscriptionsViewModel)
+                {
+                    taskList.Add(this.GetSubscriptionDetails(subscription, cancellationToken));
+                }
+
+                foreach (var task in taskList)
+                {
+                    var subscription = await task.ConfigureAwait(false);
+                    newViewModel.Add(subscription);
+                }
+
+                return this.View(newViewModel.OrderByDescending(s => s.SubscriptionName));
+            }
+            catch (Exception ex)
             {
-                var subscription = await task.ConfigureAwait(false);
-                newViewModel.Add(subscription);
+                this.ModelState.AddModelError(string.Empty, "Something went wrong, please check logs!");
+                return this.View(new List<SubscriptionViewModel>());
             }
-
-            return this.View(newViewModel.OrderByDescending(s => s.SubscriptionName));
         }
 
         /// <summary>
