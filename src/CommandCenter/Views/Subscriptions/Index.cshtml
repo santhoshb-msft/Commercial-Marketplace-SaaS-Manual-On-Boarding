@@ -7,6 +7,7 @@
 <div class="container-fluid">
     <h1>Subscriptions for all of the offers</h1>
     <br />
+        <span class="text-danger">@Html.ValidationSummary(false)</span>
         <span class="anchor">Status filter: </span>
         <div class="d-inline-block">
             @foreach (var status in Enum.GetNames(typeof(SubscriptionStatusEnum)))
