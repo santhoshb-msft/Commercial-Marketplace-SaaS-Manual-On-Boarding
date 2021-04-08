@@ -22,7 +22,7 @@ namespace CommandCenter.Models
             {
                 if (this.State == SubscriptionStatusEnum.PendingFulfillmentStart)
                 {
-                    return new List<ActionsEnum> { ActionsEnum.Activate };
+                    return new List<ActionsEnum>();
                 }
 
                 if (this.State == SubscriptionStatusEnum.Subscribed)
