@@ -563,7 +563,7 @@ deployed in earlier steps.
    the Single-Tenant Application that was created.
 5. **Save Draft:** save the current page.
 
-![How does it map?](./readmefiles/Mapping_to_partner_center.png)
+![How does it map?](./ReadmeFiles/Mapping_to_partner_center.png)
 
 #### Plan Overview
 
