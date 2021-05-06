@@ -1,7 +1,7 @@
 ### Sample Deployed Architecture
 Below sample architecture could be one way of running the sample app in your Azure instance in a Cloud optimized way.
 
-![Architecture Overview and Process Flow of the Solution](~/ReadmeFiles/saas-samplesdk-architecture.png)
+![Architecture Overview and Process Flow of the Solution](./ReadmeFiles/saas-samplesdk-architecture.png)
 
 </hr>
 
