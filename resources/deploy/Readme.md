@@ -9,6 +9,10 @@ Below sample architecture could be one way of running the sample app in your Azu
 Please use this option, if you already have app registrations created and would like to create an App and Storage account.
 
 [![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsanthoshb-msft%2FCommercial-Marketplace-SaaS-Manual-On-Boarding%2Fsb-quickdeploy%2Fresources%2Fdeploy%2FmainTemplate.json)  
+
+
+
+[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsanthoshb-msft%2FCommercial-Marketplace-SaaS-Manual-On-Boarding%2Fsb-quickdeploy%2Fresources%2Fdeploy%2Fazuredeploy.json)  
 ---
 
 ### Quick Deploy Option 2
