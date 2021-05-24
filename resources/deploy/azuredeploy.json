@@ -41,7 +41,7 @@
         "dScriptCreateAppRegName": "createAppRegistrations",
         "aadAppUri": "[concat('https://', variables('appServiceName'), '.azurewebsites.net')]",
         "aadAppRedirectUri": "[concat('https://', variables('appServiceName'), '.azurewebsites.net/signin-oidc')]",
-        "aadAppLogoutUri": "[concat('https://', variables('appServiceName'), '.azurewebsites.net/signout-oidc')]",
+        "aadAppLogoutUri": "[concat('https://', variables('appServiceName'), '.azurewebsites.net/signout-callback-oidc')]",
         "cliArgs": "[concat(variables('aadAppUri'), ' ', variables('aadAppRedirectUri'), ' ', variables('aadAppLogoutUri'))]"
     },
     "resources": [
